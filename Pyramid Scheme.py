@@ -161,13 +161,7 @@ class Board():
 properties = Properties('Title deeds.csv')
 board = Board()
 
-p = np.array(list(properties.allproperties.keys()))
-to_code = []
-for element in board.Second_Ring3:
-    if element in p:
-        pass
-    else: 
-        print(element)
+
 
 
 
