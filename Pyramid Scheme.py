@@ -1,9 +1,9 @@
 import numpy as np
-from PIL import Image
+import random
 import csv 
 
 class Player: 
-    def __init__(self, money = 7000, investment = 0, Pyramidscheme = 0): 
+    def __init__(self, money = 7000, investment = 0, Pyramidscheme = 0, Start = "Go"): 
         self.money = money
         self.investment = investment
         self.Pyramidscheme = Pyramidscheme
@@ -11,6 +11,12 @@ class Player:
         self.stock = set()
         self.travelvoucher = set()
         self.publicworkscard = set()
+
+        if Start == "Cruise":
+            self.position = ["Second", "4", 0]
+        elif Start == "Go":
+            self.position = ["Main", "2", 0]
+        
         self.showall()
 
     def showbank(self):
@@ -27,6 +33,8 @@ class Player:
         print(f"Travel vouchers: {self.travelvoucher}")
     def showpublicworkscards(self):
         print(f"Public works cards: {self.publicworkscard}")
+    def showposition(self):
+        print(f"Position: {self.position[0]} board" + f", Ring {self.position[1]}" + f", {board.Full_Board[self.position[0]][self.position[1]][self.position[2]]}" )
     def showcounters(self):
         self.showbank()
         self.showinvestment()
@@ -37,14 +45,9 @@ class Player:
         self.showstocks()
         self.showvouchers()
         self.showpublicworkscards()
+        self.showposition()
+    
 
-    def buytitledeed(self, titledeedname):
-        property_to_buy = properties.Titledeeds[titledeedname]
-        price = property_to_buy[1]
-        self.money-=price
-        self.properties.add(titledeedname)
-        print(property_to_buy)
-        self.showall()
 
 class Properties:
     def __init__(self, Titledeedsfile):
@@ -138,10 +141,14 @@ class Dice():
         self.Mysterydie = {'Chance', 'Community Chest', 'Roll3!', 'Public Works','Travel Voucher', 'Global Event', 'Employee', 'Shady Business', 'Shenanigans', 'Wild'}
         self.Jaildie_Oddjob = {1,2,3,4,5, 'Odd Jobs card'}
         self.Jaildie_Inmate = {1,2,3,4,5, 'Inmate card'}
+        self.dice = [self.Regularediewhite, self.Regularediewhite, self.Regularediegreen, self.Regularedieblue,self.Regularedieteal, self.Speeddie,self.Speedierdie,self.Investmentdie_updown,self.Investmentdie_amount,self.Schemedie, self.Mysterydie,self.Jaildie_Oddjob,self.Jaildie_Inmate]
+    
+                 
+
 
 class Board():
     def __init__(self):
-        self.Main_Ring1 = ['Stock Exchange', 'Cass Ave.', 'Woodward Ave.', 'Eight Mile Rd.', 'Gratiot Ave.', 'Telegraph Rd.', 'Checker Cab Co.', "Reading Railroad", "Esplanade Ave.", "Jackson Square", "Canal St.", "Chance", "Cable Company", "Magazine St.", "Bourbon St.", "Chip Shot Challenge", "Auction", "Katy Freeway", "Westheimer Rd.", "Galveston St.", "Shady Business", "Kirby Dr.", "Cullen Blvd.", "Chelsea Harbor", "Black & White Cab Co.", "Piedmont Park", "Dekalb Ave.", "Community Chest","Andrew Young Intl Blvd.", "Decatur St.", "Peachtree St.", "Pay Day", "Pritzker Pavilion", "Randolph St.", "Chance", "Lake Shore Dr.", "Wacker Dr.", "Michigan Ave.", "Yellow Cab Co.", "B & O Railroad", "Shenanigans", "South Temple", "East Temple", "West Temple", "Trash Collector", "North Temple", "Temple Square", "London Bridge", "South St.", "Broad St.", "Delancey St.", "Walnut St.", "Shady Business", "Market St.", "Housing Tax", "Delta Basin", "Ute Cab Co.", "Birthday Gift", "Mulholland Dr.", "Riverside Dr.", "Ventura Blvd.", "Shenanigans", "Rodeo Dr." ]
+        self.Main_Ring1 = ['Stock Exchange', 'Cass Ave.', 'Woodward Ave.', 'Eight Mile Rd.', 'Gratiot Ave.', 'Telegraph Rd.', 'Checker Cab Co.', "Reading Railroad", "Esplanade Ave.", "Jackson Square", "Canal St.", "Chance", "Cable Company", "Magazine St.", "Bourbon St.", "Chip Shot Challenge", "Auction", "Katy Freeway", "Westheimer Rd.", "Galveston St.", "Shady Business", "Kirbyq Dr.", "Cullen Blvd.", "Chelsea Harbor", "Black & White Cab Co.", "Piedmont Park", "Dekalb Ave.", "Community Chest","Andrew Young Intl Blvd.", "Decatur St.", "Peachtree St.", "Pay Day", "Pritzker Pavilion", "Randolph St.", "Chance", "Lake Shore Dr.", "Wacker Dr.", "Michigan Ave.", "Yellow Cab Co.", "B & O Railroad", "Shenanigans", "South Temple", "East Temple", "West Temple", "Trash Collector", "North Temple", "Temple Square", "London Bridge", "South St.", "Broad St.", "Delancey St.", "Walnut St.", "Shady Business", "Market St.", "Housing Tax", "Delta Basin", "Ute Cab Co.", "Birthday Gift", "Mulholland Dr.", "Riverside Dr.", "Ventura Blvd.", "Shenanigans", "Rodeo Dr." ]
         self.Main_Ring2 = ["Go", "Mediterranean Ave.","Community Chest", "Baltic Ave.", "Arctic Ave.", "Income Tax", "Reading Railroad", "Oriental Ave.", "Chance", "Vermont Ave.", "Massachusetts Ave.", "Connecticut Ave.", "Just Visiting", "St. Charles Place", "States Ave.", "Virginia Ave.", "Pennsylvania Railroad", "St. James Place", "Community Chest", "Tennessee Ave.", "New Jersey Ave.", "New York Ave.", "Free Parking", "Kentucky Ave.", "Chance", "Indiana Ave.", "Illinois Ave.", "Arkansas Ave.", "B & O Railroad", "Atlantic Ave.", "Ventnor Ave.", "California Ave.", "Water Works", "Marvin Gardens", "Go to Jail", "Pacific Ave.", "No. Carolina Ave.", "Community Chest", "Pennsylvania Ave.","So. Carolina Ave.", "Short Line", "Chance", "Park Place", "Luxury Tax", "Ohio Ave.", "Boardwalk" ]
         self.Main_Ring3 = ["Squeeze Play", "The Embarcadero", "Pasadena Blvd.", "Fisherman's Wharf", "Telephone Company", "Chance", "Beacon St.", "Bonus", "Boylston St.", "Newbury St.", "Fenway Park", "Pennsylvania Railroad", "Fifth Ave.", "Shenanigans", "Madison Ave.", "Roll3!", "Central Park", "Wall St.", "Gas Company", "Jersey Central", "Community Chest", "Florida Ave.", "Hartsfield Jackson Airport", "Subway", "Miami Ave.", "Ocean Dr.", "Biscayne Ave.", "Short Line", "Swap", "Lombard St.", "Shady Business"]
         self.Main_Ring4 = ["Holland Tunnel", "Roan St.", "Wild Card", "Five Points", "Holiday Sale", "Laura St.", "Gator Bowl Blvd.", "Tax Refund", "Opening Bell", "Ponte Vedra Blvd.", "Jersey Central", "Watuaga Ave.", "Commission", "Unaka Ave.", "Stock Tax", "John Exum Parkway"]
@@ -151,6 +158,13 @@ class Board():
         self.Second_Ring4 = ["Cruise", "Belvedere Place", "Summit Circle", "Philadelphia Railway", "Community Chest", "Arbat St.", "Holland Tunnel", "Tverskaya St.", "Theatre Square", "Compost Center", "Red Square", "Shenanigans", "Roll3!", "Mosaic St.", "Omotesando Ave.", "Atlantic Railroad", "Chance", "Shibuya Crossing", "Shinkansen", "Ginza", "Recycling Center", "The Boulevard","Sherbrooke St.", "Shady Business"]
         self.Jail_Ring1 = ["Entry1", "Possessions Seized", "Additional Charges", "Roll Call", "Land Seized", "Cell Block A", "Settlement", "Sentence Reduced", "Inmate Card", "Antitrust", "Odd Jobs", "Get Therapy", "Make A Friend", "Pyramid Scheme Discovered!", "Inmate Card", "Cell Block B", "Caught Smuggling", "Lawyer Bill", "Community Service", "Guard Pockets Bribe", "Odd Jobs", "Inmate Card", "Pardoned!", "Take Classes", "Conduct Violation", "Cell Block C", "Employee Poaching", "Inmate Card", "Tax Embezzlement", "Spoon Digging", "Escape Tunnel", "Caught Escaping", "Inmate Card", "Make A Friend", "Perjury", "Cell Block D", "Reverse Direction", "insider Trading", "Release Paperwork", "Inmate Of The Year", "Post Bail"]
         self.Jail_Ring2 = ["Entry2", "Retrial", "Skilled Cellmate", "Cell Block A", "House Arrest", "Dumpster Diving", "Odd jobs", "Inmate Card", "Asset Forfeiture", "Cell Block B", "Legal Fines", "Caught With Contraband", "Odd jobs", "Assets Frozen", "Inmate Card", "Cell Block C", "Mistrial", "Make A Friend", "Odd Jobs", "Community Service", "Cell Block D", "Model inmate", "Exploit Legal Loophole", "Post Bail"]
+
+        # Use of dictionaries to reduce a players position to 3 variables
+        self.Main = {"1" : self.Main_Ring1, "2" : self.Main_Ring2, "3" : self.Main_Ring3, "4" : self.Main_Ring4 }
+        self.Second = {"1" : self.Second_Ring1, "2" : self.Second_Ring2, "3" : self.Second_Ring3, "4" : self.Second_Ring4 }
+        self.Jail = {"1" : self.Jail_Ring1, "2" : self.Jail_Ring2}
+
+        self.Full_Board = {"Main" : self.Main, "Second" : self.Second, "Jail" : self.Jail}
     
 
 
@@ -160,7 +174,8 @@ class Board():
 
 properties = Properties('Title deeds.csv')
 board = Board()
-
+p1 = Player()
+dice = Dice()
 
 
 
