@@ -3,10 +3,10 @@ import random
 import csv 
 
 class Player: 
-    def __init__(self, money = 7000, investment = 0, Pyramidscheme = 0, Start = "Go"): 
+    def __init__(self, money = 7000, investment = 0, pyramidscheme = 0, Start = "Go", show = False): 
         self.money = money
         self.investment = investment
-        self.Pyramidscheme = Pyramidscheme
+        self.pyramidscheme = pyramidscheme
         self.properties = set()
         self.stock = set()
         self.travelvoucher = set()
@@ -16,13 +16,15 @@ class Player:
             self.position = ["Second", "4", 0]
         elif Start == "Go":
             self.position = ["Main", "2", 0]
+        self.Update_position()
         
-        self.showall()
+        if show == True:
+            self.showall()
 
     def showbank(self):
         print(f"Bank account: {self.money}")
     def showpyramidscheme(self):
-        print(f"Pyramidscheme value: {self.Pyramidscheme}")
+        print(f"Pyramidscheme value: {self.pyramidscheme}")
     def showinvestment(self):
         print(f"Investments: {self.investment}")
     def showproperties(self):
@@ -46,6 +48,33 @@ class Player:
         self.showvouchers()
         self.showpublicworkscards()
         self.showposition()
+
+    def Update_position(self):
+        self.tile_at_position = board.Full_Board[self.position[0]][self.position[1]][self.position[2]]
+
+    def Move(self, steps): 
+        print("--------------------------------")
+        for i in range(steps):
+            self.Update_position()
+            print(self.tile_at_position)
+
+            # This resolves any roll passing a railroad or moving after having landed on a railroad
+            if self.tile_at_position in properties.Railroadnames and steps%2 == 0:
+                check_up = str(int(self.position[1]) + 1)
+                check_down = str(int(self.position[1]) - 1)
+                if self.tile_at_position in board.Full_Board[self.position[0]][check_up]:
+                    self.position[1] = check_up
+                    self.position[2] = list(board.Full_Board[self.position[0]][check_up]).index(self.tile_at_position)
+                elif self.tile_at_position in board.Full_Board[self.position[0]][check_down]:
+                    self.position[1] = check_down
+                    self.position[2] = list(board.Full_Board[self.position[0]][check_down]).index(self.tile_at_position)
+            self.position[2] += 1
+        self.Update_position()
+        print(self.tile_at_position)
+                
+            
+            
+        
     
 
 
@@ -148,16 +177,16 @@ class Dice():
 
 class Board():
     def __init__(self):
-        self.Main_Ring1 = ['Stock Exchange', 'Cass Ave.', 'Woodward Ave.', 'Eight Mile Rd.', 'Gratiot Ave.', 'Telegraph Rd.', 'Checker Cab Co.', "Reading Railroad", "Esplanade Ave.", "Jackson Square", "Canal St.", "Chance", "Cable Company", "Magazine St.", "Bourbon St.", "Chip Shot Challenge", "Auction", "Katy Freeway", "Westheimer Rd.", "Galveston St.", "Shady Business", "Kirbyq Dr.", "Cullen Blvd.", "Chelsea Harbor", "Black & White Cab Co.", "Piedmont Park", "Dekalb Ave.", "Community Chest","Andrew Young Intl Blvd.", "Decatur St.", "Peachtree St.", "Pay Day", "Pritzker Pavilion", "Randolph St.", "Chance", "Lake Shore Dr.", "Wacker Dr.", "Michigan Ave.", "Yellow Cab Co.", "B & O Railroad", "Shenanigans", "South Temple", "East Temple", "West Temple", "Trash Collector", "North Temple", "Temple Square", "London Bridge", "South St.", "Broad St.", "Delancey St.", "Walnut St.", "Shady Business", "Market St.", "Housing Tax", "Delta Basin", "Ute Cab Co.", "Birthday Gift", "Mulholland Dr.", "Riverside Dr.", "Ventura Blvd.", "Shenanigans", "Rodeo Dr." ]
-        self.Main_Ring2 = ["Go", "Mediterranean Ave.","Community Chest", "Baltic Ave.", "Arctic Ave.", "Income Tax", "Reading Railroad", "Oriental Ave.", "Chance", "Vermont Ave.", "Massachusetts Ave.", "Connecticut Ave.", "Just Visiting", "St. Charles Place", "States Ave.", "Virginia Ave.", "Pennsylvania Railroad", "St. James Place", "Community Chest", "Tennessee Ave.", "New Jersey Ave.", "New York Ave.", "Free Parking", "Kentucky Ave.", "Chance", "Indiana Ave.", "Illinois Ave.", "Arkansas Ave.", "B & O Railroad", "Atlantic Ave.", "Ventnor Ave.", "California Ave.", "Water Works", "Marvin Gardens", "Go to Jail", "Pacific Ave.", "No. Carolina Ave.", "Community Chest", "Pennsylvania Ave.","So. Carolina Ave.", "Short Line", "Chance", "Park Place", "Luxury Tax", "Ohio Ave.", "Boardwalk" ]
-        self.Main_Ring3 = ["Squeeze Play", "The Embarcadero", "Pasadena Blvd.", "Fisherman's Wharf", "Telephone Company", "Chance", "Beacon St.", "Bonus", "Boylston St.", "Newbury St.", "Fenway Park", "Pennsylvania Railroad", "Fifth Ave.", "Shenanigans", "Madison Ave.", "Roll3!", "Central Park", "Wall St.", "Gas Company", "Jersey Central", "Community Chest", "Florida Ave.", "Hartsfield Jackson Airport", "Subway", "Miami Ave.", "Ocean Dr.", "Biscayne Ave.", "Short Line", "Swap", "Lombard St.", "Shady Business"]
-        self.Main_Ring4 = ["Holland Tunnel", "Roan St.", "Wild Card", "Five Points", "Holiday Sale", "Laura St.", "Gator Bowl Blvd.", "Tax Refund", "Opening Bell", "Ponte Vedra Blvd.", "Jersey Central", "Watuaga Ave.", "Commission", "Unaka Ave.", "Stock Tax", "John Exum Parkway"]
-        self.Second_Ring1 = ["Stock Exchange", "Setor Noroeste", "Lago Norte", "Park Way", "Lago Sul", "Eixo Monumental", "Chance", "Independence Ave.", "Williamstown Railroad", "Pionerskaya St.", "Nyamiha St.", "Vankovica St.", "Zhasminovaya St.", "Shenanigans", "Brivibas St.", "Elizabetes St.", "Central Market", "Stimulus Check", "Kalku St.", "Albert St.", "Shady Business", "Schreiberweg", "Postal Service", "Larochegasse", "Ringstrasse", "Tuchlauben", "Snug Harbor", "Kohlmarkt", "Yellow Monorail", "Market Lane", "Oriental Parade", "Grass St.", "McFarlane St.", "Shenanigans", "Bayview Terrace", "London Bridge", "Rua Antonio Saldanha", "Rua Garrett", "Avenida Marginal", "Green Monorail", "Avenida Da Liberdade", "Rua Do Salitre", "Shady Business", "Leidsestraat", "West Jersey Railroad", "Herengracht", "Prinsengracht", "Kalverstraat","Keizergracht", "Community Chest", "Rue Du Marche Aux Fromages", "Chaussee D'Ixelles", "Ave. Louise", "Stimulus Check", "Rue Du Buisson", "Rue Neuve", "Chance", "Emirates Rd.", "Al-Khail Rd.", "Blue Monorail", "Al-Seef St.", "Jumeirah St.", "State Marina", "Sheikh Zayed Rd.", "Community Chest", "Ave. De La Madone", "Ave. De La Costa", "Alarm Company", "Place Du Casino", "Ave. Princesse Grace", "Investment Tax"]
-        self.Second_Ring2 = ["Draw an Employee Card", "Ujazdow Ave.", "Nowy Swiat St.", "Community Chest", "Kirkeveien", "Bogstadveien", "Pilestredet", "Williamstown Railroad", "Karl Johans Gate", "Ulleval Hageby", "Shady Business", "Avenida De Asturias", "Paseo Del Prado", "Calle De Alcala", "Squeeze Play", "Tax Break", "Calle De Serrano", "Gran Via", "Chance", "Majura Rd.", "Londen Circuit", "Central Railroad", "Garema Place", "Property Tax", "Bunda St.", "Kings Ave.", "Shenanigans", "Rue Lafayette", "Go to Jail", "Ave. Henri-Martin", "Rue De La Paix", "Cell Phone Company", "Ave. Des Champs-Elysees", "Ave. Foch", "Chance", "West Jersey Railroad", "Burkliplatz", "Rennweg", "Limmatquai", "Bahnhofstrasse", "Paradeplatz", "Pyramid Scheme", "Shenanigans", "Calle Genova", "Avenida Madero", "Internet Service Provider", "Avenida Mexico", "Eje Central", "Seashore Lines", "Avenida Insurgentes", "Shady Business", "Shady Business", "Wolska St.", "Miodowa St.", "Speeding Fine", "Marsa St."]
-        self.Second_Ring3 = ["Investment" , "Shenanigans", "Via Sacra", "Piazza Del Popolo", "Via Dei Condotti", "Philadelphia Railway", "Abbey Rd.", "Sewage System", "Downing St.", "Trafalgar Square", "Lotto", "Mayfair", "Oxford St.", "O'Hare Airport", "Chausseestrasse", "Central Railroad", "Potsdam Square", "Eberstrasse", "Shady Business", "Unter Den Linden", "Global Event", "Kurfurstendamm", "Community Chest", "Satellite Television Provider", "Gotgatan", "Atlantic Railroad", "Kopmangatan", "Nytorget Square", "Import Tariff", "Strandvagen", "Subway", "Union St.", "Chance", "Academy St.", "Church St.", "Seashore Lines", "High St." ,"John F. Kennedy Airport", "Via Del Corso", "Gianicolo Promenade"]
-        self.Second_Ring4 = ["Cruise", "Belvedere Place", "Summit Circle", "Philadelphia Railway", "Community Chest", "Arbat St.", "Holland Tunnel", "Tverskaya St.", "Theatre Square", "Compost Center", "Red Square", "Shenanigans", "Roll3!", "Mosaic St.", "Omotesando Ave.", "Atlantic Railroad", "Chance", "Shibuya Crossing", "Shinkansen", "Ginza", "Recycling Center", "The Boulevard","Sherbrooke St.", "Shady Business"]
-        self.Jail_Ring1 = ["Entry1", "Possessions Seized", "Additional Charges", "Roll Call", "Land Seized", "Cell Block A", "Settlement", "Sentence Reduced", "Inmate Card", "Antitrust", "Odd Jobs", "Get Therapy", "Make A Friend", "Pyramid Scheme Discovered!", "Inmate Card", "Cell Block B", "Caught Smuggling", "Lawyer Bill", "Community Service", "Guard Pockets Bribe", "Odd Jobs", "Inmate Card", "Pardoned!", "Take Classes", "Conduct Violation", "Cell Block C", "Employee Poaching", "Inmate Card", "Tax Embezzlement", "Spoon Digging", "Escape Tunnel", "Caught Escaping", "Inmate Card", "Make A Friend", "Perjury", "Cell Block D", "Reverse Direction", "insider Trading", "Release Paperwork", "Inmate Of The Year", "Post Bail"]
-        self.Jail_Ring2 = ["Entry2", "Retrial", "Skilled Cellmate", "Cell Block A", "House Arrest", "Dumpster Diving", "Odd jobs", "Inmate Card", "Asset Forfeiture", "Cell Block B", "Legal Fines", "Caught With Contraband", "Odd jobs", "Assets Frozen", "Inmate Card", "Cell Block C", "Mistrial", "Make A Friend", "Odd Jobs", "Community Service", "Cell Block D", "Model inmate", "Exploit Legal Loophole", "Post Bail"]
+        self.Main_Ring1 = np.array(['Stock Exchange', 'Cass Ave.', 'Woodward Ave.', 'Eight Mile Rd.', 'Gratiot Ave.', 'Telegraph Rd.', 'Checker Cab Co.', "Reading Railroad", "Esplanade Ave.", "Jackson Square", "Canal St.", "Chance", "Cable Company", "Magazine St.", "Bourbon St.", "Chip Shot Challenge", "Auction", "Katy Freeway", "Westheimer Rd.", "Galveston St.", "Shady Business", "Kirbyq Dr.", "Cullen Blvd.", "Chelsea Harbor", "Black & White Cab Co.", "Piedmont Park", "Dekalb Ave.", "Community Chest","Andrew Young Intl Blvd.", "Decatur St.", "Peachtree St.", "Pay Day", "Pritzker Pavilion", "Randolph St.", "Chance", "Lake Shore Dr.", "Wacker Dr.", "Michigan Ave.", "Yellow Cab Co.", "B & O Railroad", "Shenanigans", "South Temple", "East Temple", "West Temple", "Trash Collector", "North Temple", "Temple Square", "London Bridge", "South St.", "Broad St.", "Delancey St.", "Walnut St.", "Shady Business", "Market St.", "Housing Tax", "Delta Basin", "Ute Cab Co.", "Birthday Gift", "Mulholland Dr.", "Riverside Dr.", "Ventura Blvd.", "Shenanigans", "Rodeo Dr." ])
+        self.Main_Ring2 = np.array(["Go", "Mediterranean Ave.","Community Chest", "Baltic Ave.", "Arctic Ave.", "Income Tax", "Reading Railroad", "Oriental Ave.", "Chance", "Vermont Ave.", "Massachusetts Ave.", "Connecticut Ave.", "Just Visiting", "St. Charles Place", "States Ave.", "Virginia Ave.", "Pennsylvania Railroad", "St. James Place", "Community Chest", "Tennessee Ave.", "New Jersey Ave.", "New York Ave.", "Free Parking", "Kentucky Ave.", "Chance", "Indiana Ave.", "Illinois Ave.", "Arkansas Ave.", "B & O Railroad", "Atlantic Ave.", "Ventnor Ave.", "California Ave.", "Water Works", "Marvin Gardens", "Go to Jail", "Pacific Ave.", "No. Carolina Ave.", "Community Chest", "Pennsylvania Ave.","So. Carolina Ave.", "Short Line", "Chance", "Park Place", "Luxury Tax", "Ohio Ave.", "Boardwalk" ])
+        self.Main_Ring3 = np.array(["Squeeze Play", "The Embarcadero", "Pasadena Blvd.", "Fisherman's Wharf", "Telephone Company", "Chance", "Beacon St.", "Bonus", "Boylston St.", "Newbury St.", "Fenway Park", "Pennsylvania Railroad", "Fifth Ave.", "Shenanigans", "Madison Ave.", "Roll3!", "Central Park", "Wall St.", "Gas Company", "Jersey Central", "Community Chest", "Florida Ave.", "Hartsfield Jackson Airport", "Subway", "Miami Ave.", "Ocean Dr.", "Biscayne Ave.", "Short Line", "Swap", "Lombard St.", "Shady Business"])
+        self.Main_Ring4 = np.array(["Holland Tunnel", "Roan St.", "Wild Card", "Five Points", "Holiday Sale", "Laura St.", "Gator Bowl Blvd.", "Tax Refund", "Opening Bell", "Ponte Vedra Blvd.", "Jersey Central", "Watuaga Ave.", "Commission", "Unaka Ave.", "Stock Tax", "John Exum Parkway"])
+        self.Second_Ring1 = np.array(["Stock Exchange", "Setor Noroeste", "Lago Norte", "Park Way", "Lago Sul", "Eixo Monumental", "Chance", "Independence Ave.", "Williamstown Railroad", "Pionerskaya St.", "Nyamiha St.", "Vankovica St.", "Zhasminovaya St.", "Shenanigans", "Brivibas St.", "Elizabetes St.", "Central Market", "Stimulus Check", "Kalku St.", "Albert St.", "Shady Business", "Schreiberweg", "Postal Service", "Larochegasse", "Ringstrasse", "Tuchlauben", "Snug Harbor", "Kohlmarkt", "Yellow Monorail", "Market Lane", "Oriental Parade", "Grass St.", "McFarlane St.", "Shenanigans", "Bayview Terrace", "London Bridge", "Rua Antonio Saldanha", "Rua Garrett", "Avenida Marginal", "Green Monorail", "Avenida Da Liberdade", "Rua Do Salitre", "Shady Business", "Leidsestraat", "West Jersey Railroad", "Herengracht", "Prinsengracht", "Kalverstraat","Keizergracht", "Community Chest", "Rue Du Marche Aux Fromages", "Chaussee D'Ixelles", "Ave. Louise", "Stimulus Check", "Rue Du Buisson", "Rue Neuve", "Chance", "Emirates Rd.", "Al-Khail Rd.", "Blue Monorail", "Al-Seef St.", "Jumeirah St.", "State Marina", "Sheikh Zayed Rd.", "Community Chest", "Ave. De La Madone", "Ave. De La Costa", "Alarm Company", "Place Du Casino", "Ave. Princesse Grace", "Investment Tax"])
+        self.Second_Ring2 = np.array(["Draw an Employee Card", "Ujazdow Ave.", "Nowy Swiat St.", "Community Chest", "Kirkeveien", "Bogstadveien", "Pilestredet", "Williamstown Railroad", "Karl Johans Gate", "Ulleval Hageby", "Shady Business", "Avenida De Asturias", "Paseo Del Prado", "Calle De Alcala", "Squeeze Play", "Tax Break", "Calle De Serrano", "Gran Via", "Chance", "Majura Rd.", "Londen Circuit", "Central Railroad", "Garema Place", "Property Tax", "Bunda St.", "Kings Ave.", "Shenanigans", "Rue Lafayette", "Go to Jail", "Ave. Henri-Martin", "Rue De La Paix", "Cell Phone Company", "Ave. Des Champs-Elysees", "Ave. Foch", "Chance", "West Jersey Railroad", "Burkliplatz", "Rennweg", "Limmatquai", "Bahnhofstrasse", "Paradeplatz", "Pyramid Scheme", "Shenanigans", "Calle Genova", "Avenida Madero", "Internet Service Provider", "Avenida Mexico", "Eje Central", "Seashore Lines", "Avenida Insurgentes", "Shady Business", "Shady Business", "Wolska St.", "Miodowa St.", "Speeding Fine", "Marsa St."])
+        self.Second_Ring3 = np.array(["Investment" , "Shenanigans", "Via Sacra", "Piazza Del Popolo", "Via Dei Condotti", "Philadelphia Railway", "Abbey Rd.", "Sewage System", "Downing St.", "Trafalgar Square", "Lotto", "Mayfair", "Oxford St.", "O'Hare Airport", "Chausseestrasse", "Central Railroad", "Potsdam Square", "Eberstrasse", "Shady Business", "Unter Den Linden", "Global Event", "Kurfurstendamm", "Community Chest", "Satellite Television Provider", "Gotgatan", "Atlantic Railroad", "Kopmangatan", "Nytorget Square", "Import Tariff", "Strandvagen", "Subway", "Union St.", "Chance", "Academy St.", "Church St.", "Seashore Lines", "High St." ,"John F. Kennedy Airport", "Via Del Corso", "Gianicolo Promenade"])
+        self.Second_Ring4 = np.array(["Cruise", "Belvedere Place", "Summit Circle", "Philadelphia Railway", "Community Chest", "Arbat St.", "Holland Tunnel", "Tverskaya St.", "Theatre Square", "Compost Center", "Red Square", "Shenanigans", "Roll3!", "Mosaic St.", "Omotesando Ave.", "Atlantic Railroad", "Chance", "Shibuya Crossing", "Shinkansen", "Ginza", "Recycling Center", "The Boulevard","Sherbrooke St.", "Shady Business"])
+        self.Jail_Ring1 = np.array(["Entry1", "Possessions Seized", "Additional Charges", "Roll Call", "Land Seized", "Cell Block A", "Settlement", "Sentence Reduced", "Inmate Card", "Antitrust", "Odd Jobs", "Get Therapy", "Make A Friend", "Pyramid Scheme Discovered!", "Inmate Card", "Cell Block B", "Caught Smuggling", "Lawyer Bill", "Community Service", "Guard Pockets Bribe", "Odd Jobs", "Inmate Card", "Pardoned!", "Take Classes", "Conduct Violation", "Cell Block C", "Employee Poaching", "Inmate Card", "Tax Embezzlement", "Spoon Digging", "Escape Tunnel", "Caught Escaping", "Inmate Card", "Make A Friend", "Perjury", "Cell Block D", "Reverse Direction", "insider Trading", "Release Paperwork", "Inmate Of The Year", "Post Bail"])
+        self.Jail_Ring2 = np.array(["Entry2", "Retrial", "Skilled Cellmate", "Cell Block A", "House Arrest", "Dumpster Diving", "Odd jobs", "Inmate Card", "Asset Forfeiture", "Cell Block B", "Legal Fines", "Caught With Contraband", "Odd jobs", "Assets Frozen", "Inmate Card", "Cell Block C", "Mistrial", "Make A Friend", "Odd Jobs", "Community Service", "Cell Block D", "Model inmate", "Exploit Legal Loophole", "Post Bail"])
 
         # Use of dictionaries to reduce a players position to 3 variables
         self.Main = {"1" : self.Main_Ring1, "2" : self.Main_Ring2, "3" : self.Main_Ring3, "4" : self.Main_Ring4 }
@@ -176,6 +205,10 @@ properties = Properties('Title deeds.csv')
 board = Board()
 p1 = Player()
 dice = Dice()
+p1.Move(6)
+p1.Move(4)
+
+
 
 
 
