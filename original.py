@@ -12,12 +12,12 @@ class Player:
         self.stock = set()
         self.travelvoucher = set()
         self.publicworkscard = set()
+        self.tile_at_position = ""
 
         if Start == "Cruise":
             self.position = ["Second", "4", 0]
         elif Start == "Go":
             self.position = ["Main", "2", 0]
-        self.Update_position()
         
         if show == True:
             self.showall()
@@ -37,7 +37,7 @@ class Player:
     def showpublicworkscards(self):
         print(f"Public works cards: {self.publicworkscard}")
     def showposition(self):
-        print(f"Position: {self.position[0]} board" + f", Ring {self.position[1]}" + f", {board.Full_Board[self.position[0]][self.position[1]][self.position[2]]}" )
+        print(f"Position: {self.position[0]} board" + f", Ring {self.position[1]}" + f", {self.tile_at_position}" )
     def showcounters(self):
         self.showbank()
         self.showinvestment()
@@ -49,70 +49,6 @@ class Player:
         self.showvouchers()
         self.showpublicworkscards()
         self.showposition()
-
-    def Update_position(self):
-        self.tile_at_position = board.Full_Board[self.position[0]][self.position[1]][self.position[2]]
-    
-    # Use this to take a step in position to prevent index out of bound issues
-    def Take_step(self, Backwards = False):
-        self.position[2] = (self.position[2] + 1) % len(board.Full_Board[self.position[0]][self.position[1]])
-
-    #
-    def Move(self, steps): 
-        print("--------------------------------")
-        for i in range(steps):
-            self.Update_position()
-            print(self.tile_at_position)
-
-            # This resolves railroads
-            if self.tile_at_position in properties.Railroadnames and steps%2 == 0:
-                check_up = str(int(self.position[1]) + 1)
-                check_down = str(int(self.position[1]) - 1)
-                if self.tile_at_position in board.Full_Board[self.position[0]][check_up]:
-                    self.position[1] = check_up
-                    self.position[2] = list(board.Full_Board[self.position[0]][check_up]).index(self.tile_at_position)
-                elif self.tile_at_position in board.Full_Board[self.position[0]][check_down]:
-                    self.position[1] = check_down
-                    self.position[2] = list(board.Full_Board[self.position[0]][check_down]).index(self.tile_at_position)
-                self.Take_step()
-            
-            # This will resolve London Bridge
-            elif self.tile_at_position == "London Bridge" and steps >= 8:
-                if steps == 8:
-                    print("Player must Choose") # pop-up window needed, this is only a temporary fix
-                    stay_or_cross = "Stay"
-                    if stay_or_cross == "Stay":
-                        None
-                    else:
-                        if self.position[0] == "Main":
-                            self.position = ["Second", "1", 35]
-                        else:
-                            self.position = ["Main", "1", 47]
-                else: 
-                    if self.position[0] == "Main":
-                        self.position = ["Second", "1", 35]
-                    else:
-                        self.position = ["Main", "1", 47]
-                self.Take_step()
-
-
-
-            
-            # This will resolve ...
-                
-            
-            else:
-                self.Take_step()
-        
-            
-        
-        self.Update_position()
-        print(self.tile_at_position)
-                
-            
-            
-        
-    
 
 
 class Properties:
@@ -231,21 +167,100 @@ class Board():
         self.Jail = {"1" : self.Jail_Ring1, "2" : self.Jail_Ring2}
 
         self.Full_Board = {"Main" : self.Main, "Second" : self.Second, "Jail" : self.Jail}
+
+class Game:
+    def __init__(self, number_of_players): 
+        # Creating an instance of classes so it F***ing works :)
+        self.board = Board()
+        self.properties = Properties('Title deeds.csv')
+        self.dice = Dice()
+        
+        # Initiating players
+        self.p = []
+        for i in range(number_of_players):
+            self.p.append(Player())
+            self.Update_position(i)
+
+    def Update_position(self,player_index):
+        self.p[player_index].tile_at_position = self.board.Full_Board[self.p[player_index].position[0]][self.p[player_index].position[1]][self.p[player_index].position[2]]
     
+    # Use this to take a step in position to prevent index out of bound issues
+    def Take_step(self, player_index, Backwards = False):
+        self.p[player_index].position[2] = (self.p[player_index].position[2] + 1) % len(self.board.Full_Board[self.p[player_index].position[0]][self.p[player_index].position[1]])
+    
+    # Passing railroads
+    def Pass_Railroad(self, player_index):
+        check_up = str(int(self.p[player_index].position[1]) + 1)
+        check_down = str(int(self.p[player_index].position[1]) - 1)
+        if self.p[player_index].tile_at_position in self.board.Full_Board[self.p[player_index].position[0]][check_up]:
+            self.p[player_index].position[1] = check_up
+            self.p[player_index].position[2] = list(self.board.Full_Board[self.p[player_index].position[0]][check_up]).index(self.p[player_index].tile_at_position)
+        elif self.p[player_index].tile_at_position in self.board.Full_Board[self.p[player_index].position[0]][check_down]:
+            self.p[player_index].position[1] = check_down
+            self.p[player_index].position[2] = list(self.board.Full_Board[self.p[player_index].position[0]][check_down]).index(self.p[player_index].tile_at_position)
+        self.Take_step(player_index)
+    
+    # Passing London bridge
+    def Pass_LondonBridge(self,player_index, steps):
+        if steps == 8:
+            print("Player must Choose") # pop-up window needed, this is only a temporary fix
+            stay_or_cross = "Stay"
+            if stay_or_cross == "Stay":
+                None
+            else:
+                if self.p[player_index].position[0] == "Main":
+                    self.p[player_index].position = ["Second", "1", 35]
+                else:
+                    self.p[player_index].position = ["Main", "1", 47]
+        else: 
+            if self.p[player_index].position[0] == "Main":
+                self.p[player_index].position = ["Second", "1", 35]
+            else:
+                self.p[player_index].position = ["Main", "1", 47]
+        self.Take_step(player_index)
+
+    # Drag that players lazy ass around with this function
+    def Move(self,player_index, steps): 
+        print("--------------------------------")
+        for i in range(steps):
+            self.Update_position(player_index)
+            print(self.p[player_index].tile_at_position)
+
+            # This resolves railroads
+            if self.p[player_index].tile_at_position in self.properties.Railroadnames and steps%2 == 0:
+                self.Pass_Railroad(player_index)
+            
+            # This will resolve London Bridge
+            elif self.p[player_index].tile_at_position == "London Bridge" and steps >= 8:
+                self.Pass_LondonBridge(player_index,steps)
+
+
+
+
+            
+            # This will resolve ...
+                
+            
+            else:
+                self.Take_step(player_index)
+        
+            
+        
+        self.Update_position(player_index)
+        print(self.p[player_index].tile_at_position)
 
 
 
 
 
+game = Game(15)
+game.Move(3,12)
+game.p[3].showposition()
 
-properties = Properties('Title deeds.csv')
-board = Board()
-p1 = Player()
-dice = Dice()
-p1.Move(96)
-i = list(board.Full_Board["Main"]["1"]).index("London Bridge")
-print(i)
-
+game.Move(2,78)
+game.Move(2,1)
+game.Move(2,8)
+game.p[2].showposition()
 
 
 
