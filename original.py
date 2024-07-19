@@ -52,6 +52,9 @@ class Player:
         self.showposition()
 
 
+
+
+
 class Properties:
     def __init__(self, Titledeedsfile):
         with open(Titledeedsfile,'r') as infile:
@@ -160,6 +163,12 @@ class Properties:
         for dictionary in self.dictionaries: 
             self.allproperties.update(dictionary)
 
+
+
+
+
+
+
 class Dice():
     def __init__(self):
         self.Regularediewhite = [1,2,3,4,5,6]
@@ -175,7 +184,7 @@ class Dice():
         self.Jaildie_Oddjob = [1,2,3,4,5, 'Odd Jobs card']
         self.Jaildie_Inmate = [1,2,3,4,5, 'Inmate card']
         self.dice = [self.Regularediewhite, self.Regularediewhite, self.Regularediegreen, self.Regularedieblue,self.Regularedieteal, self.Speeddie,self.Speedierdie,self.Investmentdie_updown,self.Investmentdie_amount,self.Schemedie, self.Mysterydie,self.Jaildie_Oddjob,self.Jaildie_Inmate]
-
+        self.roll_three = 0
 
     # This function will roll the dice and return the result
     def Roll_normal_v1(self):
@@ -185,37 +194,55 @@ class Dice():
 
         roll = random.choice(self.Regularediewhite)
         roll_two = random.choice(self.Regularediewhite)
-        roll_three = random.choice(self.Speeddie)
+        self.roll_three = random.choice(self.Speeddie)
         total_roll = 0
+
         # Based on whether the speed die is a number or a special icon, the total roll will be calculated
-        if roll_three == 1 or roll_three == 2 or roll_three == 3:
-            total_roll = roll + roll_two + roll_three
-            print(f"You rolled a {roll}, a {roll_two} and a {roll_three} for a total of {total_roll}!")
+        if self.roll_three == 1 or self.roll_three == 2 or self.roll_three == 3:
+            total_roll = roll + roll_two + self.roll_three
+            print(f"You rolled a {roll}, a {roll_two} and a {self.roll_three} for a total of {total_roll}!")
         else:
             total_roll = roll + roll_two
-            print(f"You rolled a {roll}, a {roll_two} and a {roll_three} for a total of {total_roll}!")
+            print(f"You rolled a {roll}, a {roll_two} and a {self.roll_three} for a total of {total_roll}!")
 
             # Pop-up window will appear for bus icon
             # TODO: implement functionality of the buttons and make sure
                     # the player first moves according to the regular dice and then performs the action of the bus icon
-            if roll_three == "Bus":
-                 window = tk.Tk()
-                 window.title("Bus Icon")
-
-                 window.configure(bg='goldenrod1')
-
-                 label = tk.Label(window, text=f"You rolled a Bus Icon!", bg='goldenrod1', font=('Helvetica', 48))
-                 label.pack()
-
-                 stay_button = tk.Button(window, text="Draw a Travel Voucher", command=window.destroy, bg='gray', font=('Helvetica', 12), padx=10, pady=5)
-                 stay_button.pack(pady=15)
-
-                 cross_button = tk.Button(window, text="Advance", command=window.destroy, bg='gray', font=('Helvetica', 12), padx=10, pady=5)
-                 cross_button.pack(pady=15)
-
-                 window.mainloop()
-        
         return total_roll
+    
+    def Rolling_monop_or_bus(self):
+        if self.roll_three == "Bus":
+            time.sleep(2)
+            window = tk.Tk()
+            window.title("Bus Icon")
+
+            window.configure(bg='goldenrod1')
+
+            label = tk.Label(window, text=f"You rolled a Bus Icon!", bg='goldenrod1', font=('Helvetica', 48))
+            label.pack()
+
+            stay_button = tk.Button(window, text="Draw a Travel Voucher", command=window.destroy, bg='gray', font=('Helvetica', 12), padx=10, pady=5)
+            stay_button.pack(pady=15)
+
+            cross_button = tk.Button(window, text="Advance", command=window.destroy, bg='gray', font=('Helvetica', 12), padx=10, pady=5)
+            cross_button.pack(pady=15)
+
+            window.mainloop()
+        
+        elif self.roll_three == "Mr. Monopoly":
+            time.sleep(2)
+            window = tk.Tk()
+            window.title("Mr. Monopoly")
+
+            window.configure(bg='red2')
+
+            label = tk.Label(window, text=f"You rolled a Mr. Monopoly!", bg='red2', font=('Helvetica', 48))
+            label.pack()
+
+            stay_button = tk.Button(window, text="To be added", command=window.destroy, bg='white', font=('Helvetica', 12), padx=10, pady=5)
+            stay_button.pack(pady=15)
+
+            window.mainloop()
 
 
 
@@ -242,6 +269,11 @@ class Board():
         self.Jail = {"1" : self.Jail_Ring1, "2" : self.Jail_Ring2}
 
         self.Full_Board = {"Main" : self.Main, "Second" : self.Second, "Jail" : self.Jail}
+
+
+
+
+
 
 class Game:
     def __init__(self, number_of_players): 
@@ -327,6 +359,7 @@ class Game:
     # This Moves the player on the board for a given roll and performs any action necessary in passing tiles.
     def Move(self,player_index):
         steps = self.dice.Roll_normal_v1()
+
         print("--------------------------------")
         for i in range(steps):
             self.Update_position(player_index)
@@ -352,9 +385,13 @@ class Game:
             
             else:
                 self.Take_step(player_index)
+                
         self.Update_position(player_index)
         print(self.p[player_index].tile_at_position)
-    
+
+        # Calling special dice functions if player has rolled a special icon, checks are built-in the function 
+        self.dice.Rolling_monop_or_bus()
+
     #needs a better name, this will perform all the actions for the tile that was landed on. 
     def End_Movement(self, player_index):
         None
