@@ -2,6 +2,7 @@ import numpy as np
 import random
 import csv 
 import tkinter as tk
+import time
 
 class Player: 
     def __init__(self, money = 7000, investment = 0, pyramidscheme = 0, Start = "Go", show = False): 
@@ -161,19 +162,35 @@ class Properties:
 
 class Dice():
     def __init__(self):
-        self.Regularediewhite = {1,2,3,4,5,6}
-        self.Regularediegreen = {1,2,3,4,5,6}
-        self.Regularedieblue = {1,2,3,4,5,6}
-        self.Regularedieteal = {1,2,3,4,5,6}
-        self.Speeddie = {1,2,3,'Mr. Monopoly', 'Mr. Monopoly', 'Bus'}
-        self.Speedierdie = {4,5,6,'Mr. Monopoly', 'Mr. Monopoly', 'Bus'}
-        self.Investmentdie_updown = {'Investment Up','Investment Up','Investment Up','Investment Up','Investment Down','Investment Down'}
-        self.Investmentdie_amount = {100, 50,'15%','20%','30%','50%'}
-        self.Schemedie = {'Pyramid', 'Dividends', 'Investment Down by 5%', 'Investment Up by 10%', 'Single Die', 'Mystery Card'}
-        self.Mysterydie = {'Chance', 'Community Chest', 'Roll3!', 'Public Works','Travel Voucher', 'Global Event', 'Employee', 'Shady Business', 'Shenanigans', 'Wild'}
-        self.Jaildie_Oddjob = {1,2,3,4,5, 'Odd Jobs card'}
-        self.Jaildie_Inmate = {1,2,3,4,5, 'Inmate card'}
+        self.Regularediewhite = [1,2,3,4,5,6]
+        self.Regularediegreen = [1,2,3,4,5,6]
+        self.Regularedieblue = [1,2,3,4,5,6]
+        self.Regularedieteal = [1,2,3,4,5,6]
+        self.Speeddie = [1,2,3,'Mr. Monopoly', 'Mr. Monopoly', 'Bus']
+        self.Speedierdie = [4,5,6,'Mr. Monopoly', 'Mr. Monopoly', 'Bus']
+        self.Investmentdie_updown = ['Investment Up','Investment Up','Investment Up','Investment Up','Investment Down','Investment Down']
+        self.Investmentdie_amount = [100, 50,'15%','20%','30%','50%']
+        self.Schemedie = ['Pyramid', 'Dividends', 'Investment Down by 5%', 'Investment Up by 10%', 'Single Die', 'Mystery Card']
+        self.Mysterydie = ['Chance', 'Community Chest', 'Roll3!', 'Public Works','Travel Voucher', 'Global Event', 'Employee', 'Shady Business', 'Shenanigans', 'Wild']
+        self.Jaildie_Oddjob = [1,2,3,4,5, 'Odd Jobs card']
+        self.Jaildie_Inmate = [1,2,3,4,5, 'Inmate card']
         self.dice = [self.Regularediewhite, self.Regularediewhite, self.Regularediegreen, self.Regularedieblue,self.Regularedieteal, self.Speeddie,self.Speedierdie,self.Investmentdie_updown,self.Investmentdie_amount,self.Schemedie, self.Mysterydie,self.Jaildie_Oddjob,self.Jaildie_Inmate]
+
+    def Roll_normal_v1(self):
+        print("Rolling dice ...")
+
+        time.sleep(1)
+
+        roll = random.choice(self.Regularediewhite)
+        roll_two = random.choice(self.Regularediewhite)
+        roll_three = random.choice(self.Speeddie)
+
+        if roll_three == 1 or roll_three == 2 or roll_three == 3:
+            total_roll = roll + roll_two + roll_three
+            print(f"You rolled a {roll}, a {roll_two} and a {roll_three} for a total of {total_roll}!")
+        else:
+            total_roll = roll + roll_two
+            print(f"You rolled a {roll}, a {roll_two} and a {roll_three} for a total of {total_roll}!")
     
                  
 
@@ -329,12 +346,14 @@ game.p[3].showposition()
 '''
 
 # test case for London bridge
+'''
 game.p[2].showposition()
 game.Move(2,78)
 game.Move(2,1)
 game.p[2].showposition()
 game.Move(2,8)
 game.p[2].showposition()
+'''
 
 #test case for Go
 '''
@@ -350,6 +369,9 @@ game.Move(1,14)
 game.p[1].showall()
 '''
 
+#test case for rolling dice
+dice = Dice()
+dice.Roll_normal_v1()
 
 
 
