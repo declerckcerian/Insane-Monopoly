@@ -186,7 +186,7 @@ class Dice():
         roll = random.choice(self.Regularediewhite)
         roll_two = random.choice(self.Regularediewhite)
         roll_three = random.choice(self.Speeddie)
-
+        total_roll = 0
         # Based on whether the speed die is a number or a special icon, the total roll will be calculated
         if roll_three == 1 or roll_three == 2 or roll_three == 3:
             total_roll = roll + roll_two + roll_three
@@ -214,6 +214,8 @@ class Dice():
                  cross_button.pack(pady=15)
 
                  window.mainloop()
+        
+        return total_roll
 
 
 
@@ -323,7 +325,8 @@ class Game:
 
 
     # This Moves the player on the board for a given roll and performs any action necessary in passing tiles.
-    def Move(self,player_index, steps): 
+    def Move(self,player_index):
+        steps = self.dice.Roll_normal_v1()
         print("--------------------------------")
         for i in range(steps):
             self.Update_position(player_index)
@@ -372,9 +375,10 @@ game.p[3].showposition()
 '''
 
 # test case for London bridge
-'''
+
 game.p[2].showposition()
-game.Move(2,78)
+game.Move(2)
+'''
 game.Move(2,1)
 game.p[2].showposition()
 game.Move(2,8)
@@ -396,8 +400,10 @@ game.p[1].showall()
 '''
 
 #test case for rolling dice
+'''
 dice = Dice()
 dice.Roll_normal_v1()
+'''
 
 
 
