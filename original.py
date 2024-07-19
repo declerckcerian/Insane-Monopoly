@@ -201,23 +201,40 @@ class Game:
         self.Take_step(player_index)
     
     # Passing London bridge
-    def Pass_LondonBridge(self,player_index, steps):
-        if steps == 8:
-            print("Player must Choose") # pop-up window needed, this is only a temporary fix
-            stay_or_cross = "Stay"
-            if stay_or_cross == "Stay":
-                None
+    def Pass_LondonBridge(self, player_index, steps):
+        def stay():
+            window.destroy()
+
+        def cross():
+            if self.p[player_index].position[0] == "Main":
+                self.p[player_index].position = ["Second", "1", 35]
             else:
-                if self.p[player_index].position[0] == "Main":
-                    self.p[player_index].position = ["Second", "1", 35]
-                else:
-                    self.p[player_index].position = ["Main", "1", 47]
+                self.p[player_index].position = ["Main", "1", 47]
+            window.destroy()
+
+        if steps == 8:
+            window = tk.Tk()
+            window.title("London Bridge Decision")
+
+            label = tk.Label(window, text="Player must choose")
+            label.pack()
+
+            stay_button = tk.Button(window, text="Stay", command=stay)
+            stay_button.pack()
+
+            cross_button = tk.Button(window, text="Cross", command=cross)
+            cross_button.pack()
+
+            window.mainloop()
         else: 
             if self.p[player_index].position[0] == "Main":
                 self.p[player_index].position = ["Second", "1", 35]
             else:
                 self.p[player_index].position = ["Main", "1", 47]
+                
         self.Take_step(player_index)
+        
+        
     
     def Pass_Go(self, player_index):
         print(" + 200$ ")
@@ -274,24 +291,34 @@ class Game:
 game = Game(15)
 
 # testcase for railroads
+'''
 game.Move(3,12)
 game.p[3].showposition()
+'''
 
 # test case for London bridge
+game.p[2].showposition()
 game.Move(2,78)
 game.Move(2,1)
+game.p[2].showposition()
 game.Move(2,8)
+game.p[2].showposition()
+game.Move(2,98)
 game.p[2].showposition()
 
 #test case for Go
+'''
 game.Move(0,45)
 game.Move(0,1)
 game.p[0].showall()
+'''
 
 #test case Bonus
+'''
 game.Move(1,48)
 game.Move(1,14)
 game.p[1].showall()
+'''
 
 
 
