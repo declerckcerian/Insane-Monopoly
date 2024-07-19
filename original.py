@@ -75,42 +75,72 @@ class Properties:
         self.Railroads = {}
         self.Railroadnames = ['Jersey Central', 'West Jersey Railroad', 'Williamstown Railroad', 'B & O Railroad', 'Pennsylvania Railroad', 'Short Line', 'Seashore Lines', 'Reading Railroad', 'Atlantic Railroad', 'Philadelphia Railway', 'Central Railroad']
         for Name in self.Railroadnames: 
-            self.Railroads[Name] = [200, 25, 50, 75, 100, 150, 200, 300, 400, 550, 750, 1000, 'RR']
+            self.Railroads[Name] = {
+                "price": 200, # price
+                "rent": [25, 50, 75, 100, 150, 200, 300, 400, 550, 750, 1000], # rent
+                "bought": False, # available or not
+                "type" : "RR" # type
+            }
         
         # Airportelements have the form 
-        # {Name : [Price, Rent, 2 AP owned, 3 AP owned, 4 AP owned, Property-type]}
+        # {Name : [Price, Rent 1 AP owned, 2 AP owned, 3 AP owned, 4 AP owned, Bought, Property-type]}
         self.Airports = {}
         self.Airportnames = ["O'Hare Airport", "Los Angeles International Airport", "John F. Kennedy Airport", "Hartsfield Jackson Airport"]
         for Name in self.Airportnames: 
-            self.Airports[Name] = [500, 60, 125, 250, 500, 'AP']
+            self.Airports[Name] = {
+                "price": 500, # price
+                "rent": [60, 125, 250, 500], # rent
+                "bought": False, # available or not
+                "type" : "AP" # type
+            }
         
         # Harborelements have the form 
-        # {Name : [Price, Rent, 2 H owned, 3 H owned, 4 H owned, Property-type]}
+        # {Name : [Price, Rent, 2 H owned, 3 H owned, 4 H owned, Bought, Property-type]}
         self.Harbors = {}
         self.Harbornames = ["Chelsea Harbor", "Delta Basin", "Snug Harbor", "State Marina"]
         for Name in self.Harbornames:
-            self.Harbors[Name] = [400, 50, 100, 200, 400, 'H']
+            self.Harbors[Name] = {
+                "price": 400, # price
+                "rent": [50, 100, 200, 400], # rent
+                "bought": False, # available or not
+                "type" : "H" # type
+            }
         
         # Cabcompanyelements have the form
-        # {Name : [Price, Rent, 2 CC owned, 3 CC owned, 4 CC owned, Property-type]}
+        # {Name : [Price, Rent, 2 CC owned, 3 CC owned, 4 CC owned, Bought, Property-type]}
         self.Cabcompanies = {}
         self.Cabcompanynames = ["Yellow Cab Co.", "Checker Cab Co.", "Black & White Cab Co.", "Ute Cab Co."]
         for Name in self.Cabcompanynames:
-            self.Cabcompanies[Name] = [300, 35, 75, 150, 300, 'CC']
+            self.Cabcompanies[Name] = {
+                "price": 300, # price
+                "rent": [35, 75, 150, 300], # rent
+                "bought": False, # available or not
+                "type" : "CC" # type
+            }
         
         # Monorailelements have the form 
-        # {Name : [Price, Rent, 2 MR owned, 3 MR owned, 4 MR owned, Property-type]}
+        # {Name : [Price, Rent, 2 MR owned, 3 MR owned, 4 MR owned, Bought, Property-type]}
         self.Monorails = {}
         self.Monorailnames = ["Red Monorail", "Yellow Monorail", "Green Monorail", "Blue Monorail"]
         for Name in self.Monorailnames:
-            self.Monorails[Name] = [600, 75, 150, 300, 600, 'MR']
+            self.Monorails[Name] = {
+                "price": 600, # price
+                "rent": [75, 150, 300, 600], # rent
+                "bought": False, # available or not
+                "type" : "MR" # type
+            }
         
         # Cellblockelements have the form
-        # {Name : [Price, Rent, 2 CB owned, 3 CB owned, 4 CB owned, Property-type]}
+        # {Name : [Price, Rent, 2 CB owned, 3 CB owned, 4 CB owned, Bought, Property-type]}
         self.Cellblocks = {}
         self.Cellblocknames = ["Cell Block A", "Cell Block B", "Cell Block C", "Cell Block D"]
         for Name in self.Cellblocknames: 
-            self.Cellblocks[Name] = [250, 125, 250, 500, 1000, 'CB']
+            self.Cellblocks[Name] = {
+                "price": 250, # price
+                "rent": [125, 250, 500, 1000], # rent
+                "bought": False, # available or not
+                "type" : "CB" # type
+            }
         
         # Utilityelements have the form 
         # {Name : [Price, Multipliers per amount of utilities owned, Property-type]}
