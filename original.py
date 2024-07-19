@@ -218,8 +218,19 @@ class Game:
             else:
                 self.p[player_index].position = ["Main", "1", 47]
         self.Take_step(player_index)
+    
+    def Pass_Go(self, player_index):
+        print(" + 200$ ")
+        self.p[player_index].money += 200
+        self.Take_step(player_index)
+    
+    def Pass_Bonus(self, player_index):
+        print("You recieve a bonus!\n + 250$")
+        self.p[player_index].money += 250
+        self.Take_step(player_index)
 
-    # Drag that players lazy ass around with this function
+
+    # This Moves the player on the board for a given roll and performs any action necessary in passing tiles.
     def Move(self,player_index, steps): 
         print("--------------------------------")
         for i in range(steps):
@@ -234,33 +245,54 @@ class Game:
             elif self.p[player_index].tile_at_position == "London Bridge" and steps >= 8:
                 self.Pass_LondonBridge(player_index,steps)
 
-
-
-
+            # This will resolve PASSING Go, landing on Go requires a different function
+            elif self.p[player_index].tile_at_position == "Go" and i>0: 
+                self.Pass_Go(player_index)
             
-            # This will resolve ...
+            # This will Pass bonus, landing on bonus is a different function
+            elif self.p[player_index].tile_at_position == "Bonus" and i>0:
+                self.Pass_Bonus(player_index)
+
                 
             
             else:
                 self.Take_step(player_index)
-        
-            
-        
         self.Update_position(player_index)
         print(self.p[player_index].tile_at_position)
+    
+    #needs a better name, this will perform all the actions for the tile that was landed on. 
+    def End_Movement(self, player_index):
+        None
+
+    
+
 
 
 
 
 
 game = Game(15)
+
+# testcase for railroads
 game.Move(3,12)
 game.p[3].showposition()
 
+# test case for London bridge
 game.Move(2,78)
 game.Move(2,1)
 game.Move(2,8)
 game.p[2].showposition()
+
+#test case for Go
+game.Move(0,45)
+game.Move(0,1)
+game.p[0].showall()
+
+#test case Bonus
+game.Move(1,48)
+game.Move(1,14)
+game.p[1].showall()
+
 
 
 
