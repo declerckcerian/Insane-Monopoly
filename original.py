@@ -216,14 +216,16 @@ class Game:
             window = tk.Tk()
             window.title("London Bridge Decision")
 
-            label = tk.Label(window, text="Player must choose")
+            window.configure(bg='pink')
+
+            label = tk.Label(window, text=f"Player must choose", bg='pink', font=('Helvetica', 48))
             label.pack()
 
-            stay_button = tk.Button(window, text="Stay", command=stay)
-            stay_button.pack()
+            stay_button = tk.Button(window, text="Stay", command=stay, bg='lightblue', font=('Helvetica', 12), padx=10, pady=5)
+            stay_button.pack(pady=15)
 
-            cross_button = tk.Button(window, text="Cross", command=cross)
-            cross_button.pack()
+            cross_button = tk.Button(window, text="Cross", command=cross, bg='lightblue', font=('Helvetica', 12), padx=10, pady=5)
+            cross_button.pack(pady=15)
 
             window.mainloop()
         else: 
@@ -302,8 +304,6 @@ game.Move(2,78)
 game.Move(2,1)
 game.p[2].showposition()
 game.Move(2,8)
-game.p[2].showposition()
-game.Move(2,98)
 game.p[2].showposition()
 
 #test case for Go
