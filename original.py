@@ -176,6 +176,8 @@ class Dice():
         self.Jaildie_Inmate = [1,2,3,4,5, 'Inmate card']
         self.dice = [self.Regularediewhite, self.Regularediewhite, self.Regularediegreen, self.Regularedieblue,self.Regularedieteal, self.Speeddie,self.Speedierdie,self.Investmentdie_updown,self.Investmentdie_amount,self.Schemedie, self.Mysterydie,self.Jaildie_Oddjob,self.Jaildie_Inmate]
 
+
+    # This function will roll the dice and return the result
     def Roll_normal_v1(self):
         print("Rolling dice ...")
 
@@ -185,12 +187,36 @@ class Dice():
         roll_two = random.choice(self.Regularediewhite)
         roll_three = random.choice(self.Speeddie)
 
+        # Based on whether the speed die is a number or a special icon, the total roll will be calculated
         if roll_three == 1 or roll_three == 2 or roll_three == 3:
             total_roll = roll + roll_two + roll_three
             print(f"You rolled a {roll}, a {roll_two} and a {roll_three} for a total of {total_roll}!")
         else:
             total_roll = roll + roll_two
             print(f"You rolled a {roll}, a {roll_two} and a {roll_three} for a total of {total_roll}!")
+
+            # Pop-up window will appear for bus icon
+            # TODO: implement functionality of the buttons and make sure
+                    # the player first moves according to the regular dice and then performs the action of the bus icon
+            if roll_three == "Bus":
+                 window = tk.Tk()
+                 window.title("Bus Icon")
+
+                 window.configure(bg='goldenrod1')
+
+                 label = tk.Label(window, text=f"You rolled a Bus Icon!", bg='goldenrod1', font=('Helvetica', 48))
+                 label.pack()
+
+                 stay_button = tk.Button(window, text="Draw a Travel Voucher", command=window.destroy, bg='gray', font=('Helvetica', 12), padx=10, pady=5)
+                 stay_button.pack(pady=15)
+
+                 cross_button = tk.Button(window, text="Advance", command=window.destroy, bg='gray', font=('Helvetica', 12), padx=10, pady=5)
+                 cross_button.pack(pady=15)
+
+                 window.mainloop()
+
+
+
     
                  
 
