@@ -151,11 +151,16 @@ class Properties:
         self.Utilities = {}
         self.Utilitynames = ["Alarm Company", "Postal Service", "Water Works", "Cable Company", "Electric Company", "Internet Service Provider", "Gas Company", "Trash Collector", "Telephone Company", "Sewage System", "Recycling Center", "Satellite Television Provider", "Compost Center", "Cell Phone Company"]
         for Name in self.Utilitynames: 
-            self.Utilities[Name] = [150, 4, 10, 20, 30, 40, 60, 80, 100, 150, 200, 250, 300, 400, 500, 'U']
+            self.Utilities[Name] = {
+                "price": 150, # price
+                "rent": [4, 10, 20, 30, 40, 60, 80, 100, 150, 200, 250, 300, 400, 500], # rent
+                "bought": False, # available or not
+                "type" : "U" # type
+            }
         
         # Stockelements have the form
-        # {Name : [ Par Value, Dividents per amount of shares, Property-type]}
-        self.Stocks = {"Motion Pictures" : [100, 10, 40, 90, 160, 250, 'S'], "Allied Steamships" : [110, 44, 99, 176, 275, 'S'], "National Utilities" : [120, 12, 48, 108, 192, 300, "S"], "General Radio" : [130, 13, 52, 117, 208, 325, 'S'], "United Railways" : [140, 14, 56, 126, 224, 350, 'S'], "American Motors" : [150, 15, 60, 135, 240, 375, 'S']}
+        # {Name : [ Par Value, Dividents per amount of shares, Property-type, Number of available stocks]}
+        self.Stocks = {"Motion Pictures" : [100, 10, 40, 90, 160, 250, 'S', 5], "Allied Steamships" : [110, 11, 44, 99, 176, 275, 'S', 5], "National Utilities" : [120, 12, 48, 108, 192, 300, "S", 5], "General Radio" : [130, 13, 52, 117, 208, 325, 'S', 5], "United Railways" : [140, 14, 56, 126, 224, 350, 'S', 5], "American Motors" : [150, 15, 60, 135, 240, 375, 'S', 5]}
         
         #Merging all properties in one dictionary
         self.allproperties = dict()

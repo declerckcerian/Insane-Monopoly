@@ -1,0 +1,28 @@
+End_Movement(self, player_index):
+	*check als tegel een deed railroad, airport, harbor, cabcompany, monorail, cellblock, utility is
+		* check als tegel gekocht is of niet
+			*indien niet gekocht, optie om te kopen
+			*indien gekocht, check als speler moet betalen
+				*indien speler niet moet betalen, gebeurt niks
+				*indien speler moet betalen, bepaal de rente
+					*a.d.h van rente, speler betaalt
+
+
+	*check als tegel 'Stock Exchange' is
+		* betalen van divident aan alle spelers met stocks, indien van toepassing
+		* speler krijgt optie om 1 aandeel te kopen van een bedrijf naar keuze
+			*indien speler bevestigt, kiest het een bedrijf (zorgen dat bedrijf enkel verschijnt als het nog aandelen over heeft!!)
+				*speler betaalt prijs en krijgt aandeel, aantal beschikbare aandelen van dat bedrijft daalt met waarde 1
+			*indien speler weigert, krijgt volgende speler de keuze, en zo verder...
+		
+		(* de actie eindigt indien 1 speler een aandeel heeft gekocht, of alle spelers weigeren)
+
+
+
+
+
+
+
+
+	*op het einde, nadat alle opties van alle mogelijke tegels overlopen zijn, voorstel om dan speler huizen te laten bouwen of afbreken indien mogelijk
+				
