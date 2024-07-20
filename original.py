@@ -189,6 +189,8 @@ class Dice():
         self.Jaildie_Oddjob = [1,2,3,4,5, 'Odd Jobs card']
         self.Jaildie_Inmate = [1,2,3,4,5, 'Inmate card']
         self.dice = [self.Regularediewhite, self.Regularediewhite, self.Regularediegreen, self.Regularedieblue,self.Regularedieteal, self.Speeddie,self.Speedierdie,self.Investmentdie_updown,self.Investmentdie_amount,self.Schemedie, self.Mysterydie,self.Jaildie_Oddjob,self.Jaildie_Inmate]
+        self.roll_one = 0
+        self.roll_two = 0
         self.roll_three = 0
 
     # This function will roll the dice and return the result
@@ -198,18 +200,18 @@ class Dice():
 
         time.sleep(1)
 
-        roll = random.choice(self.Regularediewhite)
-        roll_two = random.choice(self.Regularediewhite)
+        self.roll_one = random.choice(self.Regularediewhite)
+        self.roll_two = random.choice(self.Regularediewhite)
         self.roll_three = random.choice(self.Speeddie)
         total_roll = 0
 
         # Based on whether the speed die is a number or a special icon, the total roll will be calculated
         if self.roll_three == 1 or self.roll_three == 2 or self.roll_three == 3:
-            total_roll = roll + roll_two + self.roll_three
-            print(f"You rolled a {roll}, a {roll_two} and a {self.roll_three} for a total of {total_roll}!")
+            total_roll = self.roll_one + self.roll_two + self.roll_three
+            print(f"You rolled a {self.roll_one}, a {self.roll_two} and a {self.roll_three} for a total of {total_roll}!")
         else:
-            total_roll = roll + roll_two
-            print(f"You rolled a {roll}, a {roll_two} and a {self.roll_three} for a total of {total_roll}!")
+            total_roll = self.roll_one + self.roll_two
+            print(f"You rolled a {self.roll_one}, a {self.roll_two} and a {self.roll_three} for a total of {total_roll}!")
 
         return total_roll
     
@@ -460,6 +462,7 @@ game.p[0].showposition()
 game.Move(0)
 game.p[1].showposition()
 game.Move(1)
+
 
 
 
