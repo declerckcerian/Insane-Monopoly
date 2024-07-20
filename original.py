@@ -383,11 +383,7 @@ class Game:
             
             # This will resolve London Bridge
             elif self.p[player_index].tile_at_position == "London Bridge" and steps >= 8:
-                self.Pass_LondonBridge(player_index,steps)
-            
-            # This will resolve Holland Tunnel
-            elif self.p[player_index].tile_at_position == "Holland Tunnel":
-                self.Land_HollandTunnel(player_index)
+                self.Pass_LondonBridge(player_index,steps) 
 
             # This will resolve PASSING Go, landing on Go requires a different function
             elif self.p[player_index].tile_at_position == "Go" and i>0: 
@@ -402,6 +398,10 @@ class Game:
 
         self.Update_position(player_index)
         print(self.p[player_index].tile_at_position)
+
+        # Checking if last tile player landed on was the Holland Tunnel
+        if self.p[player_index].tile_at_position == "Holland Tunnel":
+                self.Land_HollandTunnel(player_index)
 
         # Calling special dice functions if player has rolled a special icon, checks are built-in the function 
         self.dice.Rolling_monop_or_bus()
