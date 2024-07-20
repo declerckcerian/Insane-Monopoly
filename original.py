@@ -188,6 +188,7 @@ class Dice():
 
     # This function will roll the dice and return the result
     def Roll_normal_v1(self):
+        print("********************************")
         print("Rolling dice ...")
 
         time.sleep(1)
@@ -205,14 +206,13 @@ class Dice():
             total_roll = roll + roll_two
             print(f"You rolled a {roll}, a {roll_two} and a {self.roll_three} for a total of {total_roll}!")
 
-            # Pop-up window will appear for bus icon
-            # TODO: implement functionality of the buttons and make sure
-                    # the player first moves according to the regular dice and then performs the action of the bus icon
         return total_roll
     
+    # Pop-up window will appear for bus icon and Mr. Monopoly
+    # TODO: implement functionality of the buttons
     def Rolling_monop_or_bus(self):
         if self.roll_three == "Bus":
-            time.sleep(2)
+            time.sleep(1)
             window = tk.Tk()
             window.title("Bus Icon")
 
@@ -230,7 +230,7 @@ class Dice():
             window.mainloop()
         
         elif self.roll_three == "Mr. Monopoly":
-            time.sleep(2)
+            time.sleep(1)
             window = tk.Tk()
             window.title("Mr. Monopoly")
 
@@ -281,6 +281,7 @@ class Game:
         self.board = Board()
         self.properties = Properties('Title deeds.csv')
         self.dice = Dice()
+        self.action_allowed = False
         
         # Initiating players
         self.p = []
@@ -343,7 +344,13 @@ class Game:
                 
         self.Take_step(player_index)
         
-        
+    # Landing on Holland Tunnel
+    def Land_HollandTunnel(self, player_index):
+        if self.p[player_index].position[0] == "Main":
+            self.p[player_index].position = ["Second", "4", 6]
+        else:
+            self.p[player_index].position = ["Main", "4", 0]
+        print("You crossed the Holland Tunnel.")  
     
     def Pass_Go(self, player_index):
         print(" + 200$ ")
@@ -372,6 +379,10 @@ class Game:
             # This will resolve London Bridge
             elif self.p[player_index].tile_at_position == "London Bridge" and steps >= 8:
                 self.Pass_LondonBridge(player_index,steps)
+            
+            # This will resolve Holland Tunnel
+            elif self.p[player_index].tile_at_position == "Holland Tunnel":
+                self.Land_HollandTunnel(player_index)
 
             # This will resolve PASSING Go, landing on Go requires a different function
             elif self.p[player_index].tile_at_position == "Go" and i>0: 
@@ -381,11 +392,9 @@ class Game:
             elif self.p[player_index].tile_at_position == "Bonus" and i>0:
                 self.Pass_Bonus(player_index)
 
-                
-            
             else:
                 self.Take_step(player_index)
-                
+
         self.Update_position(player_index)
         print(self.p[player_index].tile_at_position)
 
@@ -412,10 +421,9 @@ game.p[3].showposition()
 '''
 
 # test case for London bridge
-
-game.p[2].showposition()
-game.Move(2)
 '''
+game.p[2].showposition()
+game.Move(2,78)
 game.Move(2,1)
 game.p[2].showposition()
 game.Move(2,8)
@@ -441,6 +449,12 @@ game.p[1].showall()
 dice = Dice()
 dice.Roll_normal_v1()
 '''
+
+#test case for moving in turns
+game.p[0].showposition()
+game.Move(0)
+game.p[1].showposition()
+game.Move(1)
 
 
 
