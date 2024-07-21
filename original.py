@@ -14,6 +14,7 @@ class Player:
         self.travelvoucher = set()
         self.publicworkscard = set()
         self.tile_at_position = ""
+        self.jailcount = 0
 
         if Start == "Cruise":
             self.position = ["Second", "4", 0]
@@ -303,6 +304,14 @@ class Game:
     def Take_step(self, player_index, Backwards = False):
         self.p[player_index].position[2] = (self.p[player_index].position[2] + 1) % len(self.board.Full_Board[self.p[player_index].position[0]][self.p[player_index].position[1]])
     
+    # This function will move players directly to a certain tile, without rolling dice. Can be used f.e. with the Mr. Monopoly move, Go To Jail, etc ...
+    def Move_directly(self, player_index, board, ring, tile_index):
+        self.p[player_index].position[0] = board
+        self.p[player_index].position[1] = ring
+        self.p[player_index].position[2] = tile_index
+        self.Update_position(player_index)
+
+    
     # Passing railroads
     def Pass_Railroad(self, player_index):
         check_up = str(int(self.p[player_index].position[1]) + 1)
@@ -343,7 +352,9 @@ class Game:
             cross_button.pack(pady=15)
 
             window.mainloop()
-        else: 
+        else:
+            print("You're crossing the London Bridge...")
+            time.sleep(2) 
             if self.p[player_index].position[0] == "Main":
                 self.p[player_index].position = ["Second", "1", 35]
             else:
@@ -353,11 +364,13 @@ class Game:
         
     # Landing on Holland Tunnel
     def Land_HollandTunnel(self, player_index):
+        print("You're crossing the Holland Tunnel ...")
+        time.sleep(2)
         if self.p[player_index].position[0] == "Main":
             self.p[player_index].position = ["Second", "4", 6]
         else:
             self.p[player_index].position = ["Main", "4", 0]
-        print("You crossed the Holland Tunnel.")  
+         
     
     def Pass_Go(self, player_index):
         print(" + 200$ ")
@@ -368,11 +381,45 @@ class Game:
         print("You recieve a bonus!\n + 250$")
         self.p[player_index].money += 250
         self.Take_step(player_index)
+    
+    def Go_to_Jail(self, player_index):
+        time.sleep(1)
+        window = tk.Tk()
+        window.title("Go to Jail")
+
+        window.configure(bg='LavenderBlush4')
+
+        label = tk.Label(window, text=f"Uh-oh! You're going to jail!", fg='white', bg='LavenderBlush4', font=('Helvetica', 36))
+        label.pack()
+
+        button = tk.Button(window, text="Ah sh*t", command=window.destroy, bg='white', font=('Helvetica', 12), padx=10, pady=5)
+        button.pack(pady=15)
+
+        window.mainloop()
+
+        if self.p[player_index].jailcount < 3:
+               self.Move_directly(player_index, "Jail", "2", 0)
+               self.p[player_index].jailcount += 1
+        else:
+                self.Move_directly(player_index, "Jail", "1", 0)
+                self.p[player_index].jailcount += 1
+
+
+    # This will perform all the actions for the tile that was landed on. 
+    def Tile_event(self, player_index):
+       # Checking if player landed on "Go To Jail and perform the necessary actions"
+        if self.p[player_index].tile_at_position == "Go to Jail":
+            self.Go_to_Jail(player_index)
+        
+        # Checking if player landed on the Holland Tunnel
+        elif self.p[player_index].tile_at_position == "Holland Tunnel":
+                self.Land_HollandTunnel(player_index)
+            
 
 
     # This Moves the player on the board for a given roll and performs any action necessary in passing tiles.
-    def Move(self,player_index):
-        steps = self.dice.Roll_normal_v1()
+    def Move_with_dice(self,player_index, steps):
+        
 
         print("--------------------------------")
         for i in range(steps):
@@ -400,18 +447,16 @@ class Game:
 
         self.Update_position(player_index)
         print(self.p[player_index].tile_at_position)
-
-        # Checking if last tile player landed on was the Holland Tunnel
-        if self.p[player_index].tile_at_position == "Holland Tunnel":
-                self.Land_HollandTunnel(player_index)
+        
+        self.Tile_event(player_index)
 
         # Calling special dice functions if player has rolled a special icon, checks are built-in the function 
+        '''
         self.dice.Rolling_monop_or_bus()
-
-    #needs a better name, this will perform all the actions for the tile that was landed on. 
-    def End_Movement(self, player_index):
-        None
-
+        '''
+        
+          
+                
     
 
 
@@ -423,31 +468,31 @@ game = Game(15)
 
 # testcase for railroads
 '''
-game.Move(3,12)
+game.Move_with_dice(3,12)
 game.p[3].showposition()
 '''
 
 # test case for London bridge
 '''
 game.p[2].showposition()
-game.Move(2,78)
-game.Move(2,1)
+game.Move_with_dice(2,78)
+game.Move_with_dice(2,1)
 game.p[2].showposition()
-game.Move(2,8)
+game.Move_with_dice(2,8)
 game.p[2].showposition()
 '''
 
 #test case for Go
 '''
-game.Move(0,45)
-game.Move(0,1)
+game.Move_with_dice(0,45)
+game.Move_with_dice(0,1)
 game.p[0].showall()
 '''
 
 #test case Bonus
 '''
-game.Move(1,48)
-game.Move(1,14)
+game.Move_with_dice(1,48)
+game.Move_with_dice(1,14)
 game.p[1].showall()
 '''
 
@@ -457,11 +502,16 @@ dice = Dice()
 dice.Roll_normal_v1()
 '''
 
-#test case for moving in turns
+#test case for moving directly
+
 game.p[0].showposition()
-game.Move(0)
-game.p[1].showposition()
-game.Move(1)
+game.Move_directly(0, "Second", "4", 5)
+game.p[0].showposition()
+game.Move_with_dice(0, 1)
+game.p[0].showposition()
+
+
+
 
 
 
