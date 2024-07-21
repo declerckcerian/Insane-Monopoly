@@ -13,8 +13,10 @@ class Player:
         self.stock = set()
         self.travelvoucher = set()
         self.publicworkscard = set()
+        self.othercards = set()
         self.tile_at_position = ""
         self.jailcount = 0
+        self.is_in_jail = False
 
         if Start == "Cruise":
             self.position = ["Second", "4", 0]
@@ -38,6 +40,8 @@ class Player:
         print(f"Travel vouchers: {self.travelvoucher}")
     def showpublicworkscards(self):
         print(f"Public works cards: {self.publicworkscard}")
+    def showothercards(self):
+        print(f"Other cards: {self.othercards}")
     def showposition(self):
         print(f"Position: {self.position[0]} board" + f", Ring {self.position[1]}" + f", {self.tile_at_position}" )
     def showcounters(self):
@@ -50,6 +54,7 @@ class Player:
         self.showstocks()
         self.showvouchers()
         self.showpublicworkscards()
+        self.showothercards()
         self.showposition()
 
 
@@ -88,37 +93,43 @@ class Properties:
             }
         
         # Airportelements have the form 
-        # {Name : [Price, Rent 1 AP owned, 2 AP owned, 3 AP owned, 4 AP owned, Bought, Property-type]}
+        # {Name : [Price, Rent 1 AP owned, 2 AP owned, 3 AP owned, 4 AP owned, rent with terminal for 1 AP etc, terminal built or not, Bought, Property-type]}
         self.Airports = {}
         self.Airportnames = ["O'Hare Airport", "Los Angeles International Airport", "John F. Kennedy Airport", "Hartsfield Jackson Airport"]
         for Name in self.Airportnames: 
             self.Airports[Name] = {
                 "price": 500, # price
                 "rent": [60, 125, 250, 500], # rent
+                "rent_w_terminal": [120, 250, 500, 1000], # rent with terminal
+                "terminal": False, # terminal built or not
                 "bought": False, # available or not
                 "type" : "AP" # type
             }
         
         # Harborelements have the form 
-        # {Name : [Price, Rent, 2 H owned, 3 H owned, 4 H owned, Bought, Property-type]}
+        # {Name : [Price, Rent, 2 H owned, 3 H owned, 4 H owned, rent with port for 1 H etc, port built or not, Bought, Property-type]}
         self.Harbors = {}
         self.Harbornames = ["Chelsea Harbor", "Delta Basin", "Snug Harbor", "State Marina"]
         for Name in self.Harbornames:
             self.Harbors[Name] = {
                 "price": 400, # price
                 "rent": [50, 100, 200, 400], # rent
+                "rent_w_port": [100, 200, 400, 800], # rent with 
+                "port": False, # port built or not
                 "bought": False, # available or not
                 "type" : "H" # type
             }
         
         # Cabcompanyelements have the form
-        # {Name : [Price, Rent, 2 CC owned, 3 CC owned, 4 CC owned, Bought, Property-type]}
+        # {Name : [Price, Rent, 2 CC owned, 3 CC owned, 4 CC owned, Bought, rent with stand for 1 CC etc, stand built or not, Property-type]}
         self.Cabcompanies = {}
         self.Cabcompanynames = ["Yellow Cab Co.", "Checker Cab Co.", "Black & White Cab Co.", "Ute Cab Co."]
         for Name in self.Cabcompanynames:
             self.Cabcompanies[Name] = {
                 "price": 300, # price
                 "rent": [35, 75, 150, 300], # rent
+                "rent_w_stand": [70, 150, 300, 600], # rent with stand
+                "stand": False, # stand built or not
                 "bought": False, # available or not
                 "type" : "CC" # type
             }
@@ -289,6 +300,7 @@ class Game:
         self.board = Board()
         self.properties = Properties('Title deeds.csv')
         self.dice = Dice()
+        self.pool = 0
         self.action_allowed = False
         
         # Initiating players
@@ -312,6 +324,50 @@ class Game:
         self.Update_position(player_index)
 
     
+    # This function can be used to move players while using travel vouchers that say the exact amount of steps forward or backwards
+    def Move(self, player_index, steps, backwards):
+        if backwards == False:
+            for i in range(steps):
+                self.Update_position(player_index)
+                print(self.p[player_index].tile_at_position)
+
+                # This resolves railroads
+                if self.p[player_index].tile_at_position in self.properties.Railroadnames and steps%2 == 0:
+                    self.Pass_Railroad(player_index)
+            
+                # This will resolve London Bridge
+                elif self.p[player_index].tile_at_position == "London Bridge" and steps >= 8:
+                    self.Pass_LondonBridge(player_index,steps) 
+
+                # This will resolve PASSING Go, landing on Go is in Tile_event()
+                elif self.p[player_index].tile_at_position == "Go" and i>0: 
+                    self.Collect_Paycorner_highest(player_index, "Go")
+                    self.Take_step(player_index)
+            
+                # This will resolve PASSING Cruise
+                elif self.p[player_index].tile_at_position == "Cruise" and i>0:
+                    self.Collect_Paycorner_highest(player_index, "Cruise")
+                    self.Take_step(player_index)
+            
+                # This will Pass Bonus, landing on Bonus is in Tile_event()
+                elif self.p[player_index].tile_at_position == "Bonus" and i>0:
+                    self.Collect_Paycorner_highest(player_index, "Bonus")
+                    self.Take_step(player_index)
+                
+                # !! This will Pass Pay Day, landing on Pay Day is in Tile_event() but needs fixing because dice roll are still incorperated in there!!!!
+                elif self.p[player_index].tile_at_position == "Pay Day" and i>0:
+                    self.Collect_Paycorner_highest(player_index, "Pay Day")
+                    self.Take_step(player_index)
+
+                else:
+                    self.Take_step(player_index)
+
+            self.Update_position(player_index)
+            print(self.p[player_index].tile_at_position)
+        
+            self.Tile_event(player_index)
+
+    
     # Passing railroads
     def Pass_Railroad(self, player_index):
         check_up = str(int(self.p[player_index].position[1]) + 1)
@@ -324,7 +380,7 @@ class Game:
             self.p[player_index].position[2] = list(self.board.Full_Board[self.p[player_index].position[0]][check_down]).index(self.p[player_index].tile_at_position)
         self.Take_step(player_index)
     
-    # Passing London bridge
+    # Passing or landing on London bridge
     def Pass_LondonBridge(self, player_index, steps):
         def stay():
             window.destroy()
@@ -371,16 +427,53 @@ class Game:
         else:
             self.p[player_index].position = ["Main", "4", 0]
          
-    
     def Pass_Go(self, player_index):
         print(" + 200$ ")
         self.p[player_index].money += 200
+        time.sleep(1)
         self.Take_step(player_index)
     
-    def Pass_Bonus(self, player_index):
-        print("You recieve a bonus!\n + 250$")
-        self.p[player_index].money += 250
+    def Pass_Cruise(self, player_index):
+        if self.dice.Roll_normal_v1() == 10 or 11 or 12:
+            print("You recieve a bonus!\n + 100$")
+            self.p[player_index].money += 100
+            time.sleep(1)
+        elif self.dice.Roll_normal_v1() == 6 or 7 or 8 or 9:
+            print("You recieve a bonus!\n + 200$")
+            self.p[player_index].money += 200
+            time.sleep(1)
+        elif self.dice.Roll_normal_v1() <= 5:
+            print("You recieve a bonus!\n + 300$")
+            self.p[player_index].money += 300
+            time.sleep(1)
         self.Take_step(player_index)
+    
+    def Collect_Paycorner_highest(self, player_index, case):
+        if case == "Go":
+            print("You receive a bonus!\n + 200$")
+            self.p[player_index].money += 200
+        elif case == "Cruise" or "Bonus":
+            print("You receive a bonus!\n + 300$")
+            self.p[player_index].money += 300
+        elif case == "Pay Day":
+            print("You receive a bonus!\n + 400$")
+            self.p[player_index].money += 400
+        time.sleep(1)
+            
+    def Pass_Bonus(self, player_index):
+        print("You receive a bonus!\n + 250$")
+        self.p[player_index].money += 250
+        time.sleep(1)
+        self.Take_step(player_index)
+    
+    def Pay_day(self, player_index):
+        if self.dice.Roll_normal_v1() % 2 != 0:
+            print("You receive a bonus!\n + 300$")
+            self.p[player_index].money += 300
+        else:
+            print("You receive a bonus!\n + 400$")
+            self.p[player_index].money += 400
+        time.sleep(1)
     
     def Go_to_Jail(self, player_index):
         time.sleep(1)
@@ -414,13 +507,30 @@ class Game:
         # Checking if player landed on the Holland Tunnel
         elif self.p[player_index].tile_at_position == "Holland Tunnel":
                 self.Land_HollandTunnel(player_index)
+        
+        # Checking if player landed on "Tax Break" and perform the necessary actions
+        elif self.p[player_index].tile_at_position == "Tax Break":
+            receive = self.pool / 4
+            self.p[player_index].money += receive
+            self.pool -= receive
+            print(f"Player received {receive}$ from the pool")
+            time.sleep(1)
+        
+        elif self.p[player_index].tile_at_position == "Bonus":
+            self.Collect_Paycorner_highest(player_index, "Bonus")
+        
+        elif self.p[player_index].tile_at_position == "Go":
+            self.Collect_Paycorner_highest(player_index, "Go")
+        
+        elif self.p[player_index].tile_at_position == "Pay Day":
+            self.Pay_day(player_index)
+            
             
 
 
     # This Moves the player on the board for a given roll and performs any action necessary in passing tiles.
-    def Move_with_dice(self,player_index, steps):
-        
-
+    def Move_with_dice(self,player_index):
+        steps = self.dice.Roll_normal_v1()
         print("--------------------------------")
         for i in range(steps):
             self.Update_position(player_index)
@@ -438,9 +548,18 @@ class Game:
             elif self.p[player_index].tile_at_position == "Go" and i>0: 
                 self.Pass_Go(player_index)
             
-            # This will Pass bonus, landing on bonus is a different function
+            # This will resolve PASSING Cruise
+            elif self.p[player_index].tile_at_position == "Cruise" and i>0:
+                self.Pass_Cruise(player_index)
+            
+            # This will Pass bonus, landing on bonus is in Tile_event()
             elif self.p[player_index].tile_at_position == "Bonus" and i>0:
                 self.Pass_Bonus(player_index)
+            
+            # This will pass Pay Day, landing on Pay Day is in Tile_event()
+            elif self.p[player_index].tile_at_position == "Pay Day" and i>0:
+                self.Pay_day(player_index)
+                self.Take_step(player_index)
 
             else:
                 self.Take_step(player_index)
@@ -451,9 +570,8 @@ class Game:
         self.Tile_event(player_index)
 
         # Calling special dice functions if player has rolled a special icon, checks are built-in the function 
-        '''
         self.dice.Rolling_monop_or_bus()
-        '''
+        
         
           
                 
@@ -505,10 +623,9 @@ dice.Roll_normal_v1()
 #test case for moving directly
 
 game.p[0].showposition()
-game.Move_directly(0, "Second", "4", 5)
+game.Move_with_dice(0)
 game.p[0].showposition()
-game.Move_with_dice(0, 1)
-game.p[0].showposition()
+
 
 
 
