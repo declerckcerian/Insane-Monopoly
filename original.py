@@ -215,17 +215,17 @@ class Dice():
         self.roll_one = random.choice(self.Regularediewhite)
         self.roll_two = random.choice(self.Regularediewhite)
         self.roll_three = random.choice(self.Speeddie)
-        total_roll = 0
+        self.total_roll = 0
 
         # Based on whether the speed die is a number or a special icon, the total roll will be calculated
         if self.roll_three == 1 or self.roll_three == 2 or self.roll_three == 3:
-            total_roll = self.roll_one + self.roll_two + self.roll_three
-            print(f"You rolled a {self.roll_one}, a {self.roll_two} and a {self.roll_three} for a total of {total_roll}!")
+            self.total_roll = self.roll_one + self.roll_two + self.roll_three
+            print(f"You rolled a {self.roll_one}, a {self.roll_two} and a {self.roll_three} for a total of {self.total_roll}!")
         else:
-            total_roll = self.roll_one + self.roll_two
-            print(f"You rolled a {self.roll_one}, a {self.roll_two} and a {self.roll_three} for a total of {total_roll}!")
+            self.total_roll = self.roll_one + self.roll_two
+            print(f"You rolled a {self.roll_one}, a {self.roll_two} and a {self.roll_three} for a total of {self.total_roll}!")
 
-        return total_roll
+        return self.total_roll
     
     # Pop-up window will appear for bus icon and Mr. Monopoly
     # TODO: implement functionality of the buttons
@@ -301,7 +301,8 @@ class Game:
         self.properties = Properties('Title deeds.csv')
         self.dice = Dice()
         self.pool = 0
-        self.action_allowed = False
+        self.special_action_allowed = False
+        self.move_with_travelvoucher = False
         
         # Initiating players
         self.p = []
@@ -323,9 +324,13 @@ class Game:
         self.p[player_index].position[2] = tile_index
         self.Update_position(player_index)
 
+        if board == "Main" and ring == "1" and tile_index == 31:
+            self.Collect_Paycorner_highest(player_index, "Pay Day")
+
     
     # This function can be used to move players while using travel vouchers that say the exact amount of steps forward or backwards
     def Move(self, player_index, steps, backwards):
+        self.move_with_travelvoucher = True
         if backwards == False:
             for i in range(steps):
                 self.Update_position(player_index)
@@ -428,24 +433,25 @@ class Game:
             self.p[player_index].position = ["Main", "4", 0]
          
     def Pass_Go(self, player_index):
-        print(" + 200$ ")
+        print("You passed Go! + 200$ ")
         self.p[player_index].money += 200
         time.sleep(1)
         self.Take_step(player_index)
     
     def Pass_Cruise(self, player_index):
-        if self.dice.Roll_normal_v1() == 10 or 11 or 12:
-            print("You recieve a bonus!\n + 100$")
+        if self.dice.total_roll == 10 or self.dice.total_roll == 11 or self.dice.total_roll == 12:
+            print(self.dice.total_roll)
+            print("You passed Cruise! + 100$")
             self.p[player_index].money += 100
-            time.sleep(1)
-        elif self.dice.Roll_normal_v1() == 6 or 7 or 8 or 9:
-            print("You recieve a bonus!\n + 200$")
+        elif self.dice.total_roll == 6 or self.dice.total_roll == 7 or self.dice.total_roll == 8 or self.dice.total_roll == 9:
+            print(self.dice.total_roll)
+            print("You passed Cruise! + 200$")
             self.p[player_index].money += 200
-            time.sleep(1)
-        elif self.dice.Roll_normal_v1() <= 5:
-            print("You recieve a bonus!\n + 300$")
+        elif self.dice.total_roll <= 5:
+            print(self.dice.total_roll)
+            print("You passed Cruise! + 300$")
             self.p[player_index].money += 300
-            time.sleep(1)
+        time.sleep(1)
         self.Take_step(player_index)
     
     def Collect_Paycorner_highest(self, player_index, case):
@@ -467,11 +473,11 @@ class Game:
         self.Take_step(player_index)
     
     def Pay_day(self, player_index):
-        if self.dice.Roll_normal_v1() % 2 != 0:
-            print("You receive a bonus!\n + 300$")
+        if self.dice.total_roll % 2 != 0:
+            print("Pay Day! + 300$")
             self.p[player_index].money += 300
         else:
-            print("You receive a bonus!\n + 400$")
+            print("Pay Day! + 400$")
             self.p[player_index].money += 400
         time.sleep(1)
     
@@ -516,6 +522,7 @@ class Game:
             print(f"Player received {receive}$ from the pool")
             time.sleep(1)
         
+        # Checking if player landed on one of the pay corners
         elif self.p[player_index].tile_at_position == "Bonus":
             self.Collect_Paycorner_highest(player_index, "Bonus")
         
@@ -523,13 +530,19 @@ class Game:
             self.Collect_Paycorner_highest(player_index, "Go")
         
         elif self.p[player_index].tile_at_position == "Pay Day":
-            self.Pay_day(player_index)
+            if self.move_with_travelvoucher == True:
+                self.Collect_Paycorner_highest(player_index, "Pay Day")
+            else:
+                self.Pay_day(player_index)
+        
+        self.special_action_allowed = True
             
             
 
 
     # This Moves the player on the board for a given roll and performs any action necessary in passing tiles.
     def Move_with_dice(self,player_index):
+        self.move_with_travelvoucher = False
         steps = self.dice.Roll_normal_v1()
         print("--------------------------------")
         for i in range(steps):
@@ -569,8 +582,11 @@ class Game:
         
         self.Tile_event(player_index)
 
-        # Calling special dice functions if player has rolled a special icon, checks are built-in the function 
-        self.dice.Rolling_monop_or_bus()
+        # Calling special dice functions if player has rolled a special icon, checks are built-in the function
+        # Will only happen after all regular tile events have been resolved
+        if self.special_action_allowed == True:
+            self.dice.Rolling_monop_or_bus()
+    
         
         
           
@@ -623,7 +639,7 @@ dice.Roll_normal_v1()
 #test case for moving directly
 
 game.p[0].showposition()
-game.Move_with_dice(0)
+game.Move_directly(0, "Main", "1", 31),
 game.p[0].showposition()
 
 
