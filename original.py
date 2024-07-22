@@ -594,6 +594,12 @@ class Game:
             else:
                 self.Pass_stimcheck(player_index)
         
+        elif self.p[player_index].tile_at_position == "Speeding Fine":
+            fine = self.dice.total_roll * 30
+            print(f"Speeding Fine! You pay {fine}$")
+            self.p[player_index].money -= fine
+            time.sleep(1)
+        
         self.special_action_allowed = True
             
             
