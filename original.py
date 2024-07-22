@@ -84,7 +84,7 @@ class Properties:
         # Railroadelements have the form 
         # {Name : [Price, Rent, 2 RR owned, 3 RR owned, .., 11 RR owned, Property-type]}
         self.Railroads = {}
-        self.Railroadnames = ['Jersey Central', 'West Jersey Railroad', 'Williamstown Railroad', 'B & O Railroad', 'Pennsylvania Railroad', 'Short Line', 'Seashore Lines', 'Reading Railroad', 'Atlantic Railroad', 'Philadelphia Railway', 'Central Railroad']
+        self.Railroadnames = ["Jersey Central", "West Jersey Railroad", "Williamstown Railroad", "B & O Railroad", "Pennsylvania Railroad", "Short Line", "Seashore Lines", "Reading Railroad", "Atlantic Railroad", "Philadelphia Railway", "Central Railroad"]
         for Name in self.Railroadnames: 
             self.Railroads[Name] = {
                 "price": 200, # price
@@ -327,7 +327,6 @@ class Game:
 
         if board == "Main" and ring == "1" and tile_index == 31:
             self.Collect_Paycorner_highest(player_index, "Pay Day")
-
     
     # This function can be used to move players while using travel vouchers that say the exact amount of steps forward or backwards
     def Move(self, player_index, steps, backwards):
@@ -532,7 +531,18 @@ class Game:
         else:
                 self.Move_directly(player_index, "Jail", "1", 0)
                 self.p[player_index].jailcount += 1
-
+    
+    '''
+    def printAllPlayers(self):
+        for player in self.p:
+            player.showbank()
+    '''
+    
+    def receiveMoneyFromPlayers(self, player_index, amount):
+        self.p[player_index].money += amount
+        for i in range(len(self.p)):
+            if i != player_index:
+                self.p[i].money -= amount
 
     # This will perform all the actions for the tile that was landed on. 
     def Tile_event(self, player_index):
@@ -657,7 +667,11 @@ class Game:
 
 
 
-game = Game(15)
+game = Game(4)
+# Test case for receiving money from other players
+'''
+game.receiveMoneyFromPlayers(0, 1000)
+'''
 
 # testcase for railroads
 '''
@@ -696,10 +710,11 @@ dice.Roll_normal_v1()
 '''
 
 #test case for moving directly
-
+'''
 game.p[0].showposition()
 game.Move_directly(0, "Main", "1", 31),
 game.p[0].showposition()
+'''
 
 
 
