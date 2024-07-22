@@ -70,14 +70,15 @@ class Properties:
         
         # Titledeedelements have the form 
         # {Name : [Color, Price, Rent, 1 House, 2 Houses, 3 Houses, 4 Houses, Hotel, Skyscraper, 
-        # Cost of 1 house upgrade, Public works, Amount of houses, Mortgaged if True, Property-type]}
+        # Cost of 1 house upgrade, Public works, Amount of houses, Mortgaged if True, Property-type, Bought or not]}
         self.Titledeeds = {}
         for row in Deeds:
             for i in range(len(row)-2): 
                 row[i+2] = int(row[i+2])
-            row.append(0)
-            row.append(False)
-            row.append('TD')
+            row.append(0) # Amount of houses
+            row.append(False) # Mortgaged or not
+            row.append('TD') # Property-type
+            row.append(False) # Bought or not
             self.Titledeeds[row[0]] = row[1:] 
         
         # Railroadelements have the form 
@@ -363,6 +364,11 @@ class Game:
                 elif self.p[player_index].tile_at_position == "Pay Day" and i>0:
                     self.Collect_Paycorner_highest(player_index, "Pay Day")
                     self.Take_step(player_index)
+                
+                # This will pass Stimulus Check, landing on it gives nothing
+                elif self.p[player_index].tile_at_position == "Stimulus Check" and i>0:
+                    self.Collect_Paycorner_highest(player_index, "Stimulus Check")
+                    self.Take_step(player_index)
 
                 else:
                     self.Take_step(player_index)
@@ -456,19 +462,35 @@ class Game:
     
     def Collect_Paycorner_highest(self, player_index, case):
         if case == "Go":
-            print("You receive a bonus!\n + 200$")
+            print("You receive a bonus! 200$")
             self.p[player_index].money += 200
         elif case == "Cruise" or "Bonus":
-            print("You receive a bonus!\n + 300$")
+            print("You receive a bonus! 300$")
             self.p[player_index].money += 300
         elif case == "Pay Day":
-            print("You receive a bonus!\n + 400$")
+            print("You receive a bonus! 400$")
             self.p[player_index].money += 400
+        elif case == "Stimulus Check":
+            print("You receive a bonus! 500$")
+            self.p[player_index].money += 500
         time.sleep(1)
             
     def Pass_Bonus(self, player_index):
         print("You receive a bonus!\n + 250$")
         self.p[player_index].money += 250
+        time.sleep(1)
+        self.Take_step(player_index)
+    
+    def Pass_stimcheck(self, player_index):
+        if self.dice.total_roll <= 5:
+            print("You passed Stimulus Check! + 300$")
+            self.p[player_index].money += 300
+        elif self.dice.total_roll == 6 or self.dice.total_roll == 7 or self.dice.total_roll == 8 or self.dice.total_roll == 9:
+            print("You passed Stimulus Check! + 400$")
+            self.p[player_index].money += 400
+        else:
+            print("You passed Stimulus Check! + 500$")
+            self.p[player_index].money += 500
         time.sleep(1)
         self.Take_step(player_index)
     
@@ -479,6 +501,14 @@ class Game:
         else:
             print("Pay Day! + 400$")
             self.p[player_index].money += 400
+        time.sleep(1)
+    
+    # If Commission is landed on or passed from a Single Die Bonus Move, only the pips
+    # showing on that die are considered: this still needs implementation !
+    def Commission(self, player_index):
+        bonus = self.dice.total_roll * 20
+        print(f"Commission! You receive {bonus}$")
+        self.p[player_index].money += bonus
         time.sleep(1)
     
     def Go_to_Jail(self, player_index):
@@ -522,6 +552,14 @@ class Game:
             print(f"Player received {receive}$ from the pool")
             time.sleep(1)
         
+        # Checking if player landed on "Tax Refund" and perform the necessary actions
+        elif self.p[player_index].tile_at_position == "Tax Refund":
+            receive = self.pool / 2
+            self.p[player_index].money += receive
+            self.pool -= receive
+            print(f"Player received {receive}$ from the pool")
+            time.sleep(1)
+        
         # Checking if player landed on one of the pay corners
         elif self.p[player_index].tile_at_position == "Bonus":
             self.Collect_Paycorner_highest(player_index, "Bonus")
@@ -534,6 +572,17 @@ class Game:
                 self.Collect_Paycorner_highest(player_index, "Pay Day")
             else:
                 self.Pay_day(player_index)
+        
+        # Still needs fixing for when landing with travel voucher
+        elif self.p[player_index].tile_at_position == "Commission":
+            self.Commission(player_index)
+        
+        # If player lands on Stimulus Check, normal routine; if player landed with travel voucher or bonus move he gets highest reward
+        elif self.p[player_index].tile_at_position == "Stimulus Check":
+            if self.move_with_travelvoucher == True:
+                self.Collect_Paycorner_highest(player_index, "Stimulus Check")
+            else:
+                self.Pass_stimcheck(player_index)
         
         self.special_action_allowed = True
             
@@ -573,6 +622,15 @@ class Game:
             elif self.p[player_index].tile_at_position == "Pay Day" and i>0:
                 self.Pay_day(player_index)
                 self.Take_step(player_index)
+            
+            # This will pass Stimulus Check, landing on it is in Tile_event()
+            elif self.p[player_index].tile_at_position == "Stimulus Check" and i>0:
+                self.Pass_stimcheck(player_index)
+            
+            # This will pass Commision, landing on it is in Tile_event()
+            elif self.p[player_index].tile_at_position == "Commission" and i>0:
+                self.Commission(player_index)
+                self.Take_step(player_index)
 
             else:
                 self.Take_step(player_index)
@@ -580,6 +638,7 @@ class Game:
         self.Update_position(player_index)
         print(self.p[player_index].tile_at_position)
         
+        # After moving is done, tile event will be resolved
         self.Tile_event(player_index)
 
         # Calling special dice functions if player has rolled a special icon, checks are built-in the function
