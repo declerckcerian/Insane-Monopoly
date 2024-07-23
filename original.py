@@ -537,12 +537,20 @@ class Game:
         for player in self.p:
             player.showbank()
     '''
-    
+    # These functions can be used to transfer money between players
     def receiveMoneyFromPlayers(self, player_index, amount):
         self.p[player_index].money += amount
         for i in range(len(self.p)):
             if i != player_index:
                 self.p[i].money -= amount
+        print(f"Player {player_index} received {amount}$ from all other players")
+        time.sleep(1)
+    
+    def receiveMoneyFromOnePlayer(self, player_index, target, amount):
+        self.p[player_index].money += amount
+        self.p[target].money -= amount
+        print(f"Player {player_index} received {amount}$ from player {target}")
+        time.sleep(1)
 
     # This will perform all the actions for the tile that was landed on. 
     def Tile_event(self, player_index):
@@ -675,9 +683,11 @@ class Game:
 
 game = Game(4)
 # Test case for receiving money from other players
-'''
-game.receiveMoneyFromPlayers(0, 1000)
-'''
+game.receiveMoneyFromPlayers(2, 1000)
+game.receiveMoneyFromOnePlayer(0, 3, 550)
+game.p[0].showbank()
+game.p[2].showbank()
+game.p[3].showbank()
 
 # testcase for railroads
 '''
