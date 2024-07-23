@@ -103,6 +103,7 @@ class Properties:
                 "rent": [60, 125, 250, 500], # rent
                 "rent_w_terminal": [120, 250, 500, 1000], # rent with terminal
                 "terminal": False, # terminal built or not
+                "Terminal_price": 250, # price of terminal
                 "bought": False, # available or not
                 "type" : "AP" # type
             }
@@ -117,6 +118,7 @@ class Properties:
                 "rent": [50, 100, 200, 400], # rent
                 "rent_w_port": [100, 200, 400, 800], # rent with 
                 "port": False, # port built or not
+                "port_price": 200, # price of port
                 "bought": False, # available or not
                 "type" : "H" # type
             }
@@ -131,6 +133,7 @@ class Properties:
                 "rent": [35, 75, 150, 300], # rent
                 "rent_w_stand": [70, 150, 300, 600], # rent with stand
                 "stand": False, # stand built or not
+                "stand_price": 150, # price of stand
                 "bought": False, # available or not
                 "type" : "CC" # type
             }
@@ -181,6 +184,11 @@ class Properties:
         for dictionary in self.dictionaries: 
             self.allproperties.update(dictionary)
 
+
+
+
+class Cards():
+    None
 
 
 
@@ -329,7 +337,7 @@ class Game:
             self.Collect_Paycorner_highest(player_index, "Pay Day")
     
     # This function can be used to move players while using travel vouchers that say the exact amount of steps forward or backwards
-    def Move(self, player_index, steps, backwards):
+    def Move_in_steps(self, player_index, steps, backwards):
         self.move_with_travelvoucher = True
         if backwards == False:
             for i in range(steps):
@@ -551,8 +559,14 @@ class Game:
         self.p[target].money -= amount
         print(f"Player {player_index} received {amount}$ from player {target}")
         time.sleep(1)
+    
+    def buyRailroad(self, player_index, railroad):
+        self.properties.Railroads[railroad]["bought"] = True
+        self.p[player_index].money -= self.properties.Railroads[railroad]["price"]
+        print(f"Player {player_index} bought {railroad} for {self.properties.Railroads[railroad]['price']}$")
+        time.sleep(1)
 
-    # This will perform all the actions for the tile that was landed on. 
+    # This will perform all the actions for the tile that was landed on
     def Tile_event(self, player_index):
        # Checking if player landed on "Go To Jail and perform the necessary actions"
         if self.p[player_index].tile_at_position == "Go to Jail":
