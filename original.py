@@ -57,10 +57,6 @@ class Player:
         self.showothercards()
         self.showposition()
 
-
-
-
-
 class Properties:
     def __init__(self, Titledeedsfile):
         with open(Titledeedsfile,'r') as infile:
@@ -184,16 +180,9 @@ class Properties:
         for dictionary in self.dictionaries: 
             self.allproperties.update(dictionary)
 
-
-
-
-class Cards():
-    None
-
-
-
-
-
+class Cards(): #this just sets up all the cards, functions for each card will have to be add in the Game Class
+    def __init__(self):
+        self.Global_Events = {"Reverse, Reverse!", "Stock Market SOARS!", "Bull Market", "Authorities Tipped", "Sneaky Schemers", "Taxation Crisis!", "The Most Common Number", "..."}
 
 class Dice():
     def __init__(self):
@@ -272,12 +261,6 @@ class Dice():
 
             window.mainloop()
 
-
-
-    
-                 
-
-
 class Board():
     def __init__(self):
         self.Main_Ring1 = np.array(['Stock Exchange', 'Cass Ave.', 'Woodward Ave.', 'Eight Mile Rd.', 'Gratiot Ave.', 'Telegraph Rd.', 'Checker Cab Co.', "Reading Railroad", "Esplanade Ave.", "Jackson Square", "Canal St.", "Chance", "Cable Company", "Magazine St.", "Bourbon St.", "Chip Shot Challenge", "Auction", "Katy Freeway", "Westheimer Rd.", "Galveston St.", "Shady Business", "Kirbyq Dr.", "Cullen Blvd.", "Chelsea Harbor", "Black & White Cab Co.", "Piedmont Park", "Dekalb Ave.", "Community Chest","Andrew Young Intl Blvd.", "Decatur St.", "Peachtree St.", "Pay Day", "Pritzker Pavilion", "Randolph St.", "Chance", "Lake Shore Dr.", "Wacker Dr.", "Michigan Ave.", "Yellow Cab Co.", "B & O Railroad", "Shenanigans", "South Temple", "East Temple", "West Temple", "Trash Collector", "North Temple", "Temple Square", "London Bridge", "South St.", "Broad St.", "Delancey St.", "Walnut St.", "Shady Business", "Market St.", "Housing Tax", "Delta Basin", "Ute Cab Co.", "Birthday Gift", "Mulholland Dr.", "Riverside Dr.", "Ventura Blvd.", "Shenanigans", "Rodeo Dr." ])
@@ -297,11 +280,6 @@ class Board():
         self.Jail = {"1" : self.Jail_Ring1, "2" : self.Jail_Ring2}
 
         self.Full_Board = {"Main" : self.Main, "Second" : self.Second, "Jail" : self.Jail}
-
-
-
-
-
 
 class Game:
     def __init__(self, number_of_players): 
