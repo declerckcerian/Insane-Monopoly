@@ -66,16 +66,24 @@ class Properties:
         
         # Titledeedelements have the form 
         # {Name : [Color, Price, Rent, 1 House, 2 Houses, 3 Houses, 4 Houses, Hotel, Skyscraper, 
-        # Cost of 1 house upgrade, Public works, Amount of houses, Mortgaged if True, Property-type, Bought or not]}
+        # Cost of 1 house upgrade, Public works, Amount of houses, Mortgaged if True, owner, Property-type]}
         self.Titledeeds = {}
         for row in Deeds:
             for i in range(len(row)-2): 
                 row[i+2] = int(row[i+2])
-            row.append(0) # Amount of houses
-            row.append(False) # Mortgaged or not
-            row.append('TD') # Property-type
-            row.append(False) # Bought or not
-            self.Titledeeds[row[0]] = row[1:] 
+            self.Titledeeds[row[0]] = {
+                "color" : row[1],
+                "price" : row[2],
+                "rent" : row[3:9],
+                "house_price" : row[10],
+                "public works" : row[11],
+                "houses" : 0,
+                "mortgaged" : False,
+                "owner" : None,
+                "type" : "TD"
+
+            }
+            #self.Titledeeds[row[0]] = row[1:] 
         
         # Railroadelements have the form 
         # {Name : [Price, Rent, 2 RR owned, 3 RR owned, .., 11 RR owned, Property-type]}
@@ -85,7 +93,8 @@ class Properties:
             self.Railroads[Name] = {
                 "price": 200, # price
                 "rent": [25, 50, 75, 100, 150, 200, 300, 400, 550, 750, 1000], # rent
-                "bought": False, # available or not
+                "owner": None, # available or not
+                "mortgaged" : False,
                 "type" : "RR" # type
             }
         
@@ -99,8 +108,9 @@ class Properties:
                 "rent": [60, 125, 250, 500], # rent
                 "rent_w_terminal": [120, 250, 500, 1000], # rent with terminal
                 "terminal": False, # terminal built or not
-                "Terminal_price": 250, # price of terminal
-                "bought": False, # available or not
+                "terminal_price": 250, # price of terminal
+                "owner": None, # available or not
+                "mortgaged" : False,
                 "type" : "AP" # type
             }
         
@@ -115,7 +125,8 @@ class Properties:
                 "rent_w_port": [100, 200, 400, 800], # rent with 
                 "port": False, # port built or not
                 "port_price": 200, # price of port
-                "bought": False, # available or not
+                "owner": None, # available or not
+                "mortgaged" : False,
                 "type" : "H" # type
             }
         
@@ -130,7 +141,8 @@ class Properties:
                 "rent_w_stand": [70, 150, 300, 600], # rent with stand
                 "stand": False, # stand built or not
                 "stand_price": 150, # price of stand
-                "bought": False, # available or not
+                "owner": None, # available or not
+                "mortgaged" : False,
                 "type" : "CC" # type
             }
         
@@ -142,7 +154,8 @@ class Properties:
             self.Monorails[Name] = {
                 "price": 600, # price
                 "rent": [75, 150, 300, 600], # rent
-                "bought": False, # available or not
+                "owner": None, # available or not
+                "mortgaged" : False,
                 "type" : "MR" # type
             }
         
@@ -154,7 +167,8 @@ class Properties:
             self.Cellblocks[Name] = {
                 "price": 250, # price
                 "rent": [125, 250, 500, 1000], # rent
-                "bought": False, # available or not
+                "owner": None, # available or not
+                "mortgaged" : False,
                 "type" : "CB" # type
             }
         
@@ -166,7 +180,8 @@ class Properties:
             self.Utilities[Name] = {
                 "price": 150, # price
                 "rent": [4, 10, 20, 30, 40, 60, 80, 100, 150, 200, 250, 300, 400, 500], # rent
-                "bought": False, # available or not
+                "owner": None, # available or not
+                "mortgaged" : False,
                 "type" : "U" # type
             }
         
@@ -180,11 +195,11 @@ class Properties:
         for dictionary in self.dictionaries: 
             self.allproperties.update(dictionary)
 
-class Cards(): #this just sets up all the cards, functions for each card will have to be add in the Game Class
+class Cards: #this just sets up all the cards, functions for each card will have to be added in the Game Class
     def __init__(self):
         self.Global_Events = {"Reverse, Reverse!", "Stock Market SOARS!", "Bull Market", "Authorities Tipped", "Sneaky Schemers", "Taxation Crisis!", "The Most Common Number", "..."}
 
-class Dice():
+class Dice:
     def __init__(self):
         self.Regularediewhite = [1,2,3,4,5,6]
         self.Regularediegreen = [1,2,3,4,5,6]
@@ -261,7 +276,7 @@ class Dice():
 
             window.mainloop()
 
-class Board():
+class Board:
     def __init__(self):
         self.Main_Ring1 = np.array(['Stock Exchange', 'Cass Ave.', 'Woodward Ave.', 'Eight Mile Rd.', 'Gratiot Ave.', 'Telegraph Rd.', 'Checker Cab Co.', "Reading Railroad", "Esplanade Ave.", "Jackson Square", "Canal St.", "Chance", "Cable Company", "Magazine St.", "Bourbon St.", "Chip Shot Challenge", "Auction", "Katy Freeway", "Westheimer Rd.", "Galveston St.", "Shady Business", "Kirbyq Dr.", "Cullen Blvd.", "Chelsea Harbor", "Black & White Cab Co.", "Piedmont Park", "Dekalb Ave.", "Community Chest","Andrew Young Intl Blvd.", "Decatur St.", "Peachtree St.", "Pay Day", "Pritzker Pavilion", "Randolph St.", "Chance", "Lake Shore Dr.", "Wacker Dr.", "Michigan Ave.", "Yellow Cab Co.", "B & O Railroad", "Shenanigans", "South Temple", "East Temple", "West Temple", "Trash Collector", "North Temple", "Temple Square", "London Bridge", "South St.", "Broad St.", "Delancey St.", "Walnut St.", "Shady Business", "Market St.", "Housing Tax", "Delta Basin", "Ute Cab Co.", "Birthday Gift", "Mulholland Dr.", "Riverside Dr.", "Ventura Blvd.", "Shenanigans", "Rodeo Dr." ])
         self.Main_Ring2 = np.array(["Go", "Mediterranean Ave.","Community Chest", "Baltic Ave.", "Arctic Ave.", "Income Tax", "Reading Railroad", "Oriental Ave.", "Chance", "Vermont Ave.", "Massachusetts Ave.", "Connecticut Ave.", "Just Visiting", "St. Charles Place", "States Ave.", "Virginia Ave.", "Pennsylvania Railroad", "St. James Place", "Community Chest", "Tennessee Ave.", "New Jersey Ave.", "New York Ave.", "Free Parking", "Kentucky Ave.", "Chance", "Indiana Ave.", "Illinois Ave.", "Arkansas Ave.", "B & O Railroad", "Atlantic Ave.", "Ventnor Ave.", "California Ave.", "Water Works", "Marvin Gardens", "Go to Jail", "Pacific Ave.", "No. Carolina Ave.", "Community Chest", "Pennsylvania Ave.","So. Carolina Ave.", "Short Line", "Chance", "Park Place", "Luxury Tax", "Ohio Ave.", "Boardwalk" ])
@@ -537,12 +552,6 @@ class Game:
         self.p[target].money -= amount
         print(f"Player {player_index} received {amount}$ from player {target}")
         time.sleep(1)
-    
-    def buyRailroad(self, player_index, railroad):
-        self.properties.Railroads[railroad]["bought"] = True
-        self.p[player_index].money -= self.properties.Railroads[railroad]["price"]
-        print(f"Player {player_index} bought {railroad} for {self.properties.Railroads[railroad]['price']}$")
-        time.sleep(1)
 
     # This will perform all the actions for the tile that was landed on
     def Tile_event(self, player_index):
@@ -662,6 +671,17 @@ class Game:
         if self.special_action_allowed == True:
             self.dice.Rolling_monop_or_bus()
     
+    # Buying properties 
+    def Buy_property(self, player_index, propertyname):
+        if self.properties.allproperties[propertyname]["owner"] == None:
+            self.p[player_index].money -= self.properties.allproperties[propertyname]["price"]
+            self.properties.allproperties[propertyname]["owner"] = player_index
+            print(f"Player {player_index} bought {propertyname} for {self.properties.allproperties[propertyname]['price']}$")
+            time.sleep(1)
+        else: 
+            print(f"Property is alread owned by player {self.properties.allproperties[propertyname]['owner']} ")
+
+    
         
         
           
@@ -675,11 +695,18 @@ class Game:
 
 game = Game(4)
 # Test case for receiving money from other players
+'''
 game.receiveMoneyFromPlayers(2, 1000)
 game.receiveMoneyFromOnePlayer(0, 3, 550)
 game.p[0].showbank()
 game.p[2].showbank()
 game.p[3].showbank()
+'''
+
+# testcase for buying properties
+game.Buy_property(0, "Cass Ave.")
+game.p[0].showbank()
+game.Buy_property(1,"Cass Ave.")
 
 # testcase for railroads
 '''
@@ -722,8 +749,8 @@ dice.Roll_normal_v1()
 game.p[0].showposition()
 game.Move_directly(0, "Main", "1", 31),
 game.p[0].showposition()
-'''
 
+'''
 
 
 
