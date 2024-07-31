@@ -187,13 +187,33 @@ class Properties:
         
         # Stockelements have the form
         # {Name : [ Par Value, Dividents per amount of shares, Property-type, Number of available stocks]}
-        self.Stocks = {"Motion Pictures" : [100, 10, 40, 90, 160, 250, 'S', 5], "Allied Steamships" : [110, 11, 44, 99, 176, 275, 'S', 5], "National Utilities" : [120, 12, 48, 108, 192, 300, "S", 5], "General Radio" : [130, 13, 52, 117, 208, 325, 'S', 5], "United Railways" : [140, 14, 56, 126, 224, 350, 'S', 5], "American Motors" : [150, 15, 60, 135, 240, 375, 'S', 5]}
+        self.Stocks = {
+            "Motion Pictures" : {"price": 100, "dividends" : [10, 40, 90, 160, 250], "type" : 'S', "amount" : 5, "owner" : None}, 
+            "Allied Steamships" : {"price" : 110, "dividends" : [11, 44, 99, 176, 275], "type":'S', "amount": 5, "owner" : None}, 
+            "National Utilities" : {"price" : 120, "dividends" : [12, 48, 108, 192, 300],"type": "S","amount" : 5, "owner" : None},
+            "General Radio" : {"price":130, "dividends" : [13, 52, 117, 208, 325], "type" : 'S', "amount" : 5, "owner" : None},
+            "United Railways" : {"price" : 140,"dividends" : [14, 56, 126, 224, 350], "type" :'S',"amount": 5, "owner" : None},
+            "American Motors" : {"price" : 150, "dividends" : [15, 60, 135, 240, 375], "type" :'S',"amount" : 5, "owner" : None}
+        }
         
-        #Merging all properties in one dictionary
+        # Merging all properties in one dictionary
         self.allproperties = dict()
         self.dictionaries = [self.Airports, self.Cabcompanies, self.Cellblocks, self.Harbors, self.Monorails, self.Railroads, self.Titledeeds, self.Stocks, self.Utilities]
         for dictionary in self.dictionaries: 
             self.allproperties.update(dictionary)
+        
+        # Making a dictionary to easily find the needed properties without using too many if statements
+        self.type = {
+            "TD" : self.Titledeeds,
+            "U" : self.Utilities,
+            "CB" : self.Cellblocks,
+            "CC" : self.Cabcompanies,
+            "RR" : self.Railroads,
+            "S" : self.Stocks, 
+            "MR" : self.Monorails,
+            "H" : self.Harbors, 
+            "AP" : self.Airports
+        }
 
 class Cards: #this just sets up all the cards, functions for each card will have to be added in the Game Class
     def __init__(self):
@@ -680,6 +700,20 @@ class Game:
             time.sleep(1)
         else: 
             print(f"Property is alread owned by player {self.properties.allproperties[propertyname]['owner']} ")
+            time.sleep(1)
+        self.Update_owned_properties(player_index)
+    
+    def Update_owned_properties(self, player_index):
+        for propname in self.properties.allproperties: 
+            if self.properties.allproperties[propname]["owner"] == player_index: 
+                self.p[player_index].properties.add(propname)
+            
+
+
+
+    # Updating how many RRs, MRs, CCs, etc. are owned by each player by changing the rent_index
+    def Update_amount_of_props_owned(self):
+        None
 
     
         
@@ -707,12 +741,14 @@ game.p[3].showbank()
 game.Buy_property(0, "Cass Ave.")
 game.p[0].showbank()
 game.Buy_property(1,"Cass Ave.")
+game.p[0].showproperties()
 
-# testcase for railroads
+# test case for railroads
 '''
-game.Move_with_dice(3,12)
+game.Move_with_dice(3)
 game.p[3].showposition()
 '''
+
 
 # test case for London bridge
 '''
